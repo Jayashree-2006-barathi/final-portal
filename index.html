@@ -1,0 +1,4678 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Greenfield University | Student Course Registration Portal</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+<style>
+/* ===================================================================
+   GREENFIELD UNIVERSITY DESIGN TOKENS & SYSTEM
+   =================================================================== */
+:root {
+  --primary: #2563EB;
+  --primary-hover: #1D4ED8;
+  --primary-light: #EFF6FF;
+  --primary-subtle: #DBEAFE;
+  
+  --secondary: #059669;
+  --secondary-hover: #047857;
+  --secondary-light: #ECFDF5;
+  --secondary-subtle: #D1FAE5;
+  
+  --accent: #7C3AED;
+  --accent-light: #F5F3FF;
+  --accent-subtle: #EDE9FE;
+  
+  --error: #DC2626;
+  --error-light: #FEF2F2;
+  --error-subtle: #FEE2E2;
+  
+  --warning: #D97706;
+  --warning-light: #FFFBEB;
+  --warning-subtle: #FEF3C7;
+  
+  --bg: #F8FAFC;
+  --card-bg: #FFFFFF;
+  --text: #0F172A;
+  --text-secondary: #475569;
+  --text-muted: #64748B;
+  --border: #E2E8F0;
+  --border-focus: #2563EB;
+  
+  --shadow-sm: 0 1px 2px rgba(0,0,0,0.05);
+  --shadow: 0 1px 3px rgba(0,0,0,0.1), 0 1px 2px rgba(0,0,0,0.06);
+  --shadow-md: 0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -1px rgba(0,0,0,0.06);
+  --shadow-lg: 0 10px 15px -3px rgba(0,0,0,0.1), 0 4px 6px -2px rgba(0,0,0,0.05);
+  --shadow-xl: 0 20px 25px -5px rgba(0,0,0,0.1), 0 10px 10px -5px rgba(0,0,0,0.04);
+  
+  --radius-sm: 6px;
+  --radius: 10px;
+  --radius-lg: 14px;
+  --radius-full: 9999px;
+  
+  --font: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --header-height: 70px;
+  --transition: 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+  font-family: var(--font);
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.5;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+a { color: var(--primary); text-decoration: none; }
+a:hover { text-decoration: underline; }
+button { cursor: pointer; font-family: inherit; }
+input, select, textarea { font-family: inherit; font-size: 0.95rem; }
+:focus-visible { outline: 2px solid var(--border-focus); outline-offset: 2px; }
+
+/* ===== UTILITIES ===== */
+.sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); border: 0; }
+.flex { display: flex; }
+.flex-col { flex-direction: column; }
+.items-center { align-items: center; }
+.justify-between { justify-content: space-between; }
+.justify-center { justify-content: center; }
+.gap-1 { gap: 0.25rem; }
+.gap-2 { gap: 0.5rem; }
+.gap-3 { gap: 0.75rem; }
+.gap-4 { gap: 1rem; }
+.gap-6 { gap: 1.5rem; }
+.text-sm { font-size: 0.875rem; }
+.text-xs { font-size: 0.75rem; }
+.text-muted { color: var(--text-muted); }
+.font-semibold { font-weight: 600; }
+.font-bold { font-weight: 700; }
+.w-full { width: 100%; }
+.mt-1 { margin-top: 0.25rem; }
+.mt-2 { margin-top: 0.5rem; }
+.mt-4 { margin-top: 1rem; }
+.mt-6 { margin-top: 1.5rem; }
+.mb-2 { margin-bottom: 0.5rem; }
+.mb-4 { margin-bottom: 1rem; }
+.hidden { display: none !important; }
+
+/* ===== APP HEADER & NAVBAR ===== */
+.site-header {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(8px);
+  border-bottom: 1px solid var(--border);
+  height: var(--header-height);
+  box-shadow: var(--shadow-sm);
+}
+.header-container {
+  max-width: 1360px;
+  margin: 0 auto;
+  height: 100%;
+  padding: 0 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.brand-group {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  cursor: pointer;
+}
+.brand-logo {
+  width: 42px;
+  height: 42px;
+  background: linear-gradient(135deg, #1E3A5F, #2563EB);
+  color: white;
+  border-radius: var(--radius-sm);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.4rem;
+  box-shadow: 0 2px 5px rgba(37,99,235,0.25);
+}
+.brand-meta {
+  display: flex;
+  flex-direction: column;
+}
+.brand-title {
+  font-size: 1.125rem;
+  font-weight: 700;
+  color: var(--text);
+  line-height: 1.2;
+}
+.brand-subtitle {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--primary);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+/* Nav Links */
+.nav-links {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  list-style: none;
+}
+.nav-btn {
+  background: transparent;
+  border: none;
+  padding: 0.55rem 1rem;
+  border-radius: var(--radius-sm);
+  color: var(--text-secondary);
+  font-weight: 600;
+  font-size: 0.925rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  transition: all var(--transition);
+}
+.nav-btn:hover {
+  background: var(--bg);
+  color: var(--text);
+}
+.nav-btn.active {
+  background: var(--primary-light);
+  color: var(--primary);
+}
+.nav-count-badge {
+  background: var(--primary);
+  color: white;
+  font-size: 0.75rem;
+  font-weight: 700;
+  padding: 0.1rem 0.5rem;
+  border-radius: var(--radius-full);
+}
+
+/* User Profile & Auth CTA */
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+.user-menu-wrapper {
+  position: relative;
+}
+.user-profile-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  background: white;
+  border: 1px solid var(--border);
+  padding: 0.35rem 0.85rem 0.35rem 0.5rem;
+  border-radius: var(--radius-full);
+  transition: all var(--transition);
+}
+.user-profile-btn:hover {
+  border-color: #CBD5E1;
+  background: #F8FAFC;
+}
+.user-avatar {
+  width: 34px;
+  height: 34px;
+  border-radius: var(--radius-full);
+  background: linear-gradient(135deg, var(--primary), var(--accent));
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 0.85rem;
+}
+.user-info-text {
+  text-align: left;
+  line-height: 1.2;
+}
+.user-name {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--text);
+}
+.user-role-label {
+  font-size: 0.7rem;
+  color: var(--text-muted);
+}
+.user-dropdown {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  background: white;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-xl);
+  min-width: 230px;
+  padding: 0.5rem;
+  display: none;
+  z-index: 200;
+  animation: dropdownIn 0.15s ease-out;
+}
+.user-dropdown.open { display: block; }
+@keyframes dropdownIn {
+  from { opacity: 0; transform: translateY(-6px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.dropdown-header {
+  padding: 0.65rem 0.75rem;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 0.35rem;
+}
+.dropdown-header-name { font-weight: 700; font-size: 0.9rem; }
+.dropdown-header-id { font-size: 0.75rem; color: var(--text-muted); }
+.dropdown-header-program { font-size: 0.75rem; color: var(--primary); font-weight: 500; margin-top: 2px; }
+.dropdown-item {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  padding: 0.6rem 0.75rem;
+  border: none;
+  background: none;
+  color: var(--text);
+  font-size: 0.875rem;
+  border-radius: var(--radius-sm);
+  text-align: left;
+  transition: background var(--transition);
+}
+.dropdown-item:hover { background: var(--bg); }
+.dropdown-item.danger { color: var(--error); }
+.dropdown-item.danger:hover { background: var(--error-light); }
+
+/* Hamburger for Mobile */
+.mobile-toggle {
+  display: none;
+  background: transparent;
+  border: none;
+  font-size: 1.4rem;
+  color: var(--text);
+  padding: 0.5rem;
+  border-radius: var(--radius-sm);
+}
+.mobile-toggle:hover { background: var(--bg); }
+
+/* ===== BUTTONS ===== */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.65rem 1.25rem;
+  border-radius: var(--radius-sm);
+  font-size: 0.9rem;
+  font-weight: 600;
+  border: none;
+  transition: all var(--transition);
+  white-space: nowrap;
+}
+.btn-primary {
+  background: var(--primary);
+  color: white;
+  box-shadow: 0 1px 2px rgba(37,99,235,0.2);
+}
+.btn-primary:hover:not(:disabled) {
+  background: var(--primary-hover);
+  box-shadow: 0 4px 8px rgba(37,99,235,0.3);
+  transform: translateY(-1px);
+}
+.btn-secondary {
+  background: var(--secondary);
+  color: white;
+}
+.btn-secondary:hover:not(:disabled) {
+  background: var(--secondary-hover);
+}
+.btn-accent {
+  background: var(--accent);
+  color: white;
+}
+.btn-accent:hover:not(:disabled) {
+  background: #6D28D9;
+}
+.btn-outline {
+  background: white;
+  color: var(--text);
+  border: 1.5px solid var(--border);
+}
+.btn-outline:hover:not(:disabled) {
+  background: #F8FAFC;
+  border-color: #CBD5E1;
+}
+.btn-danger {
+  background: var(--error);
+  color: white;
+}
+.btn-danger:hover:not(:disabled) {
+  background: #B91C1C;
+}
+.btn-ghost {
+  background: transparent;
+  color: var(--text-secondary);
+}
+.btn-ghost:hover:not(:disabled) {
+  background: var(--bg);
+  color: var(--text);
+}
+.btn-sm {
+  padding: 0.4rem 0.8rem;
+  font-size: 0.825rem;
+}
+.btn-block { width: 100%; }
+.btn:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+  transform: none !important;
+  box-shadow: none !important;
+}
+
+/* Spinner */
+.spinner {
+  width: 16px;
+  height: 16px;
+  border: 2px solid rgba(255,255,255,0.3);
+  border-radius: 50%;
+  border-top-color: white;
+  animation: spin 0.6s linear infinite;
+  display: inline-block;
+}
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* ===== MAIN CONTENT WRAPPER ===== */
+.main-wrapper {
+  max-width: 1360px;
+  margin: 0 auto;
+  width: 100%;
+  padding: 1.75rem 1.5rem 3rem;
+  flex: 1;
+}
+
+/* Page Headers */
+.page-hero {
+  background: linear-gradient(135deg, #1E3A5F 0%, #2563EB 60%, #4F46E5 100%);
+  color: white;
+  border-radius: var(--radius-lg);
+  padding: 2rem 2.25rem;
+  margin-bottom: 2rem;
+  box-shadow: var(--shadow-md);
+  position: relative;
+  overflow: hidden;
+}
+.page-hero::after {
+  content: '🎓';
+  position: absolute;
+  right: 2rem;
+  bottom: -1rem;
+  font-size: 8rem;
+  opacity: 0.08;
+  pointer-events: none;
+}
+.hero-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  background: rgba(255,255,255,0.2);
+  backdrop-filter: blur(4px);
+  padding: 0.25rem 0.75rem;
+  border-radius: var(--radius-full);
+  font-size: 0.75rem;
+  font-weight: 600;
+  margin-bottom: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+.hero-title {
+  font-size: 1.85rem;
+  font-weight: 700;
+  margin-bottom: 0.4rem;
+  line-height: 1.25;
+}
+.hero-desc {
+  font-size: 0.95rem;
+  opacity: 0.9;
+  max-width: 680px;
+}
+
+/* ===== STATS OVERVIEW CARDS ===== */
+.stats-strip {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 1.25rem;
+  margin-bottom: 2rem;
+}
+.stat-box {
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 1.25rem 1.5rem;
+  box-shadow: var(--shadow-sm);
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  transition: transform var(--transition), box-shadow var(--transition);
+}
+.stat-box:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow);
+}
+.stat-box-icon {
+  width: 44px;
+  height: 44px;
+  border-radius: var(--radius-sm);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.35rem;
+}
+.stat-box-icon.blue { background: var(--primary-light); color: var(--primary); }
+.stat-box-icon.green { background: var(--secondary-light); color: var(--secondary); }
+.stat-box-icon.purple { background: var(--accent-light); color: var(--accent); }
+.stat-box-icon.amber { background: var(--warning-light); color: var(--warning); }
+
+.stat-box-content { display: flex; flex-direction: column; }
+.stat-box-num { font-size: 1.75rem; font-weight: 700; color: var(--text); line-height: 1.1; }
+.stat-box-label { font-size: 0.825rem; color: var(--text-muted); font-weight: 600; margin-top: 0.35rem; }
+.stat-progress-bar {
+  width: 100%;
+  height: 6px;
+  background: #E2E8F0;
+  border-radius: 999px;
+  margin-top: 0.75rem;
+  overflow: hidden;
+}
+.stat-progress-fill {
+  height: 100%;
+  background: var(--primary);
+  border-radius: 999px;
+  transition: width 0.4s ease;
+}
+
+/* ===== CATALOGUE TOOLBAR & FILTERS ===== */
+.catalogue-toolbar {
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 1.25rem;
+  box-shadow: var(--shadow-sm);
+  margin-bottom: 1.75rem;
+}
+.filter-row {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+.search-input-wrapper {
+  position: relative;
+  flex: 2;
+  min-width: 260px;
+}
+.search-icon {
+  position: absolute;
+  left: 0.9rem;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--text-muted);
+  font-size: 1rem;
+}
+.search-input {
+  width: 100%;
+  padding: 0.65rem 1rem 0.65rem 2.4rem;
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: white;
+  transition: all var(--transition);
+}
+.search-input:focus {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(37,99,235,0.12);
+  outline: none;
+}
+.filter-select {
+  padding: 0.65rem 0.85rem;
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: white;
+  color: var(--text);
+  font-size: 0.875rem;
+  min-width: 160px;
+  cursor: pointer;
+  transition: border-color var(--transition);
+}
+.filter-select:focus {
+  border-color: var(--primary);
+  outline: none;
+}
+.toolbar-meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 1rem;
+  padding-top: 0.85rem;
+  border-top: 1px solid var(--border);
+  font-size: 0.85rem;
+  color: var(--text-muted);
+}
+
+/* ===== BADGES ===== */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.25rem 0.65rem;
+  border-radius: var(--radius-full);
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+}
+.badge-open {
+  background: var(--secondary-light);
+  color: var(--secondary);
+  border: 1px solid var(--secondary-subtle);
+}
+.badge-waitlist {
+  background: var(--accent-light);
+  color: var(--accent);
+  border: 1px solid var(--accent-subtle);
+}
+.badge-full {
+  background: var(--warning-light);
+  color: var(--warning);
+  border: 1px solid var(--warning-subtle);
+}
+.badge-closed {
+  background: #F1F5F9;
+  color: #475569;
+  border: 1px solid #CBD5E1;
+}
+.badge-enrolled {
+  background: #DCFCE7;
+  color: #15803D;
+  font-weight: 700;
+  border: 1px solid #86EFAC;
+}
+.badge-withdrawn {
+  background: #F3F4F6;
+  color: #6B7280;
+  border: 1px solid #E5E7EB;
+}
+
+/* ===== COURSE CARDS GRID ===== */
+.courses-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+  gap: 1.5rem;
+}
+.course-card {
+  background: var(--card-bg);
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-sm);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  transition: transform var(--transition), box-shadow var(--transition), border-color var(--transition);
+  position: relative;
+}
+.course-card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-lg);
+  border-color: #CBD5E1;
+}
+.course-card:hover .course-banner-icon {
+  transform: scale(1.12) translateY(-2px);
+}
+.course-card.is-enrolled {
+  border-color: #86EFAC;
+  box-shadow: 0 4px 12px rgba(22,163,74,0.12);
+}
+.course-card.is-waitlisted {
+  border-color: #DDD6FE;
+  box-shadow: 0 4px 12px rgba(124,58,237,0.12);
+}
+
+/* Course banner image */
+.course-banner {
+  width: 100%;
+  height: 160px;
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  padding: 1rem 1.25rem;
+  position: relative;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+.course-banner-photo {
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  transition: background-position 0.5s ease;
+}
+.course-card:hover .course-banner-photo {
+  background-position: center 55%;
+}
+.course-banner-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to top, rgba(0,0,0,0.82) 0%, rgba(0,0,0,0.45) 55%, rgba(0,0,0,0.15) 100%);
+  z-index: 0;
+}
+.course-banner::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: inherit;
+  filter: brightness(1);
+}
+.course-banner::after {
+  content: '';
+  position: absolute;
+  bottom: -20px;
+  right: -20px;
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.04);
+  z-index: 0;
+}
+.course-banner-text {
+  position: relative;
+  z-index: 1;
+}
+.course-banner-code {
+  font-size: 0.68rem;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  color: rgba(255,255,255,0.85);
+  text-transform: uppercase;
+  margin-bottom: 0.2rem;
+}
+.course-banner-title {
+  font-size: 1.0rem;
+  font-weight: 700;
+  color: #fff;
+  line-height: 1.3;
+  max-width: 230px;
+  text-shadow: 0 1px 4px rgba(0,0,0,0.5);
+}
+.course-banner-dept {
+  font-size: 0.7rem;
+  color: rgba(255,255,255,0.72);
+  margin-top: 0.3rem;
+  font-weight: 500;
+}
+.course-banner-icon {
+  font-size: 3.5rem;
+  position: relative;
+  z-index: 1;
+  transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+  filter: drop-shadow(0 4px 8px rgba(0,0,0,0.2));
+  flex-shrink: 0;
+}
+.course-banner-badge {
+  position: absolute;
+  top: 0.75rem;
+  right: 0.75rem;
+  z-index: 2;
+}
+
+
+.course-card-header {
+  padding: 0.9rem 1.25rem 0.6rem;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+.course-code-wrap {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+.course-code {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--primary);
+  background: var(--primary-light);
+  padding: 0.2rem 0.55rem;
+  border-radius: var(--radius-sm);
+}
+.course-dept-tag {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--text-muted);
+}
+.course-title {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--text);
+  line-height: 1.35;
+  margin: 0.5rem 1.25rem 0.35rem;
+}
+.course-desc {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  line-height: 1.5;
+  margin: 0 1.25rem 0.85rem;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.course-details-list {
+  padding: 0 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+  margin-bottom: 1rem;
+  font-size: 0.825rem;
+  color: var(--text-secondary);
+}
+.detail-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+.detail-icon {
+  font-size: 0.95rem;
+  color: var(--text-muted);
+  width: 1.1rem;
+  text-align: center;
+}
+
+/* Seats indicator */
+.seat-capacity-meter {
+  margin: 0 1.25rem 1.25rem;
+  padding: 0.75rem;
+  background: var(--bg);
+  border-radius: var(--radius-sm);
+}
+.meter-label {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.785rem;
+  font-weight: 600;
+  margin-bottom: 0.35rem;
+}
+.meter-bar {
+  height: 6px;
+  background: #E2E8F0;
+  border-radius: 999px;
+  overflow: hidden;
+}
+.meter-fill {
+  height: 100%;
+  border-radius: 999px;
+  transition: width 0.3s ease;
+}
+.fill-green { background: var(--secondary); }
+.fill-amber { background: var(--warning); }
+.fill-red { background: var(--error); }
+
+.course-card-actions {
+  margin-top: auto;
+  padding: 1rem 1.25rem;
+  border-top: 1px solid var(--border);
+  background: #FAFBFD;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+/* ===== TABLE VIEW ===== */
+.courses-table-container {
+  background: white;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-sm);
+  overflow-x: auto;
+}
+.courses-table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+  font-size: 0.875rem;
+}
+.courses-table th {
+  background: #F8FAFC;
+  padding: 0.85rem 1rem;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  letter-spacing: 0.04em;
+  border-bottom: 1.5px solid var(--border);
+}
+.courses-table td {
+  padding: 1rem;
+  border-bottom: 1px solid var(--border);
+  vertical-align: middle;
+}
+.courses-table tr:hover td {
+  background: #F8FAFC;
+}
+.courses-table tr:last-child td { border-bottom: none; }
+
+/* ===== TIMETABLE / SCHEDULE MATRIX ===== */
+.schedule-container {
+  background: white;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-sm);
+  padding: 1.5rem;
+  overflow-x: auto;
+}
+.schedule-grid-wrap {
+  min-width: 720px;
+}
+.schedule-matrix {
+  display: grid;
+  grid-template-columns: 90px repeat(5, 1fr);
+  gap: 4px;
+}
+.matrix-day-header {
+  background: linear-gradient(135deg, #1E3A5F, #2563EB);
+  color: white;
+  padding: 0.75rem;
+  text-align: center;
+  font-weight: 700;
+  font-size: 0.85rem;
+  border-radius: var(--radius-sm);
+}
+.matrix-time-header {
+  background: var(--bg);
+  padding: 0.75rem 0.5rem;
+  text-align: center;
+  font-weight: 600;
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  border-radius: var(--radius-sm);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.matrix-slot-cell {
+  background: #F8FAFC;
+  border: 1px dashed #E2E8F0;
+  border-radius: var(--radius-sm);
+  min-height: 72px;
+  padding: 0.35rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  position: relative;
+}
+.schedule-class-block {
+  background: #EFF6FF;
+  border: 1.5px solid #BFDBFE;
+  border-left: 4px solid var(--primary);
+  border-radius: var(--radius-sm);
+  padding: 0.45rem;
+  font-size: 0.75rem;
+  cursor: pointer;
+  transition: all var(--transition);
+}
+.schedule-class-block:hover {
+  transform: scale(1.02);
+  box-shadow: var(--shadow-md);
+}
+.class-block-code { font-weight: 700; color: var(--primary); }
+.class-block-title { font-weight: 600; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.class-block-room { color: var(--text-muted); font-size: 0.7rem; }
+
+/* ===== MODAL ===== */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.6);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 1.25rem;
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.2s ease;
+}
+.modal-overlay.open {
+  opacity: 1;
+  visibility: visible;
+}
+.modal-card {
+  background: white;
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-xl);
+  width: 100%;
+  max-width: 580px;
+  max-height: 90vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  transform: scale(0.96);
+  transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.modal-overlay.open .modal-card {
+  transform: scale(1);
+}
+.modal-header {
+  padding: 1.25rem 1.5rem;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.modal-title { font-size: 1.15rem; font-weight: 700; }
+.modal-close-btn {
+  background: transparent;
+  border: none;
+  font-size: 1.5rem;
+  color: var(--text-muted);
+  width: 36px;
+  height: 36px;
+  border-radius: var(--radius-sm);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background var(--transition);
+}
+.modal-close-btn:hover { background: var(--bg); color: var(--text); }
+.modal-body {
+  padding: 1.5rem;
+  overflow-y: auto;
+}
+.modal-footer {
+  padding: 1rem 1.5rem;
+  border-top: 1px solid var(--border);
+  background: #FAFBFD;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 0.75rem;
+}
+
+/* Detail modal specifics */
+.detail-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+  margin: 1rem 0;
+}
+.detail-item-box {
+  background: var(--bg);
+  padding: 0.75rem;
+  border-radius: var(--radius-sm);
+}
+.detail-item-title { font-size: 0.75rem; font-weight: 600; color: var(--text-muted); text-transform: uppercase; }
+.detail-item-val { font-size: 0.95rem; font-weight: 600; color: var(--text); margin-top: 0.15rem; }
+
+/* ===== TOAST ALERTS ===== */
+.toast-container {
+  position: fixed;
+  top: calc(var(--header-height) + 1rem);
+  right: 1.5rem;
+  z-index: 2000;
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+  pointer-events: none;
+}
+.toast {
+  pointer-events: auto;
+  display: flex;
+  align-items: flex-start;
+  gap: 0.85rem;
+  padding: 0.95rem 1.25rem;
+  background: white;
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-xl);
+  border-left: 4.5px solid var(--primary);
+  font-size: 0.875rem;
+  min-width: 320px;
+  max-width: 440px;
+  animation: slideToast 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  transition: opacity 0.2s;
+}
+.toast-success { border-left-color: var(--secondary); }
+.toast-error { border-left-color: var(--error); }
+.toast-warning { border-left-color: var(--warning); }
+.toast-info { border-left-color: var(--primary); }
+
+.toast-icon { font-size: 1.25rem; line-height: 1; }
+.toast-content { flex: 1; }
+.toast-title { font-weight: 700; margin-bottom: 0.15rem; }
+.toast-message { color: var(--text-secondary); line-height: 1.4; }
+.toast-close {
+  background: none;
+  border: none;
+  font-size: 1.15rem;
+  color: var(--text-muted);
+  cursor: pointer;
+  padding: 0;
+}
+@keyframes slideToast {
+  from { transform: translateX(100%); opacity: 0; }
+  to { transform: translateX(0); opacity: 1; }
+}
+
+/* ===== AUTHENTICATION FORMS ===== */
+.auth-page {
+  max-width: 460px;
+  margin: 1.5rem auto 3rem;
+  background: white;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-lg);
+  overflow: hidden;
+}
+.auth-header {
+  background: linear-gradient(135deg, #1E3A5F, #2563EB);
+  color: white;
+  padding: 2rem 2rem 1.75rem;
+  text-align: center;
+}
+.auth-body { padding: 1.75rem 2rem 2rem; }
+.auth-tabs {
+  display: flex;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+  margin-bottom: 1.5rem;
+}
+.auth-tab-btn {
+  flex: 1;
+  padding: 0.65rem;
+  border: none;
+  background: white;
+  font-weight: 600;
+  font-size: 0.875rem;
+  color: var(--text-muted);
+  transition: all var(--transition);
+}
+.auth-tab-btn.active {
+  background: var(--primary);
+  color: white;
+}
+.form-group {
+  margin-bottom: 1.1rem;
+}
+.form-label {
+  display: block;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--text);
+  margin-bottom: 0.35rem;
+}
+.form-label .req { color: var(--error); margin-left: 2px; }
+.form-input {
+  width: 100%;
+  padding: 0.65rem 0.85rem;
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: white;
+  transition: all var(--transition);
+}
+.form-input:focus {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(37,99,235,0.12);
+  outline: none;
+}
+.form-input.error { border-color: var(--error); }
+.field-error {
+  color: var(--error);
+  font-size: 0.775rem;
+  margin-top: 0.3rem;
+  display: none;
+}
+.field-error.show { display: block; }
+
+.quick-demo-box {
+  background: #F0F9FF;
+  border: 1px dashed #BAE6FD;
+  border-radius: var(--radius-sm);
+  padding: 0.85rem;
+  margin-top: 1.25rem;
+  font-size: 0.8rem;
+}
+.quick-demo-box strong { color: var(--primary); }
+
+/* Empty state */
+.empty-state {
+  text-align: center;
+  padding: 3.5rem 1.5rem;
+  background: white;
+  border: 1px dashed var(--border);
+  border-radius: var(--radius);
+}
+.empty-icon { font-size: 3rem; margin-bottom: 0.75rem; }
+.empty-title { font-size: 1.2rem; font-weight: 700; color: var(--text); margin-bottom: 0.35rem; }
+.empty-desc { font-size: 0.875rem; color: var(--text-muted); max-width: 420px; margin: 0 auto 1.25rem; }
+
+/* Footer */
+.site-footer {
+  border-top: 1px solid var(--border);
+  background: white;
+  padding: 1.5rem;
+  text-align: center;
+  font-size: 0.85rem;
+  color: var(--text-muted);
+}
+
+/* Mobile responsive */
+@media (max-width: 820px) {
+  .nav-links { display: none; }
+  .mobile-toggle { display: block; }
+  .courses-grid { grid-template-columns: 1fr; }
+  .detail-grid { grid-template-columns: 1fr; }
+  .auth-body { padding: 1.25rem; }
+  .page-hero { padding: 1.5rem; }
+  .hero-title { font-size: 1.5rem; }
+}
+
+/* Mobile drawer */
+.mobile-drawer {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.5);
+  z-index: 1500;
+  display: none;
+}
+.mobile-drawer.open { display: block; }
+.drawer-content {
+  width: 280px;
+  height: 100%;
+  background: white;
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+.drawer-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid var(--border);
+  padding-bottom: 1rem;
+}
+
+/* ===== ADMIN PORTAL STYLING ===== */
+.page-hero.admin-hero {
+  background: linear-gradient(135deg, #0F172A 0%, #1E293B 40%, #1E40AF 100%);
+}
+.page-hero.admin-hero::after {
+  content: '🛡️';
+  font-size: 7.5rem;
+  opacity: 0.12;
+}
+.admin-tabs-bar {
+  display: flex;
+  gap: 0.5rem;
+  background: white;
+  border: 1px solid var(--border);
+  padding: 0.4rem;
+  border-radius: var(--radius);
+  margin-bottom: 1.5rem;
+  box-shadow: var(--shadow-sm);
+  overflow-x: auto;
+}
+.admin-tab-btn {
+  padding: 0.65rem 1.15rem;
+  border-radius: var(--radius-sm);
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  transition: all var(--transition);
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  white-space: nowrap;
+}
+.admin-tab-btn:hover {
+  color: var(--text);
+  background: var(--bg);
+}
+.admin-tab-btn.active {
+  background: var(--primary);
+  color: white;
+  box-shadow: var(--shadow-sm);
+}
+.admin-badge-count {
+  background: rgba(0,0,0,0.06);
+  font-size: 0.75rem;
+  padding: 0.15rem 0.5rem;
+  border-radius: var(--radius-full);
+  font-weight: 700;
+}
+.admin-tab-btn.active .admin-badge-count {
+  background: rgba(255,255,255,0.25);
+  color: white;
+}
+.admin-table-card {
+  background: white;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 1.5rem;
+  box-shadow: var(--shadow-sm);
+  margin-bottom: 2rem;
+  overflow-x: auto;
+}
+.admin-form-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1rem;
+}
+.pill-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.25rem 0.65rem;
+  border-radius: var(--radius-full);
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+}
+.pill-badge.open { background: #ECFDF5; color: #047857; border: 1px solid #A7F3D0; }
+.pill-badge.waitlist { background: #F5F3FF; color: #6D28D9; border: 1px solid #DDD6FE; }
+.pill-badge.full { background: #FEF3C7; color: #B45309; border: 1px solid #FDE68A; }
+.pill-badge.closed { background: #FEE2E2; color: #B91C1C; border: 1px solid #FECACA; }
+.utilization-track {
+  width: 100%;
+  height: 8px;
+  background: #E2E8F0;
+  border-radius: var(--radius-full);
+  overflow: hidden;
+  margin-top: 0.35rem;
+}
+.utilization-fill {
+  height: 100%;
+  border-radius: var(--radius-full);
+  transition: width 0.4s ease;
+}
+</style>
+</head>
+<body>
+
+<!-- ===== HEADER ===== -->
+<header class="site-header">
+  <div class="header-container">
+    <div class="brand-group" id="brandHomeBtn" role="button" tabindex="0" aria-label="Greenfield ERP Home">
+      <div class="brand-logo">🎓</div>
+      <div class="brand-meta">
+        <span class="brand-title">Greenfield University</span>
+        <span class="brand-subtitle">Course Registration Portal</span>
+      </div>
+    </div>
+
+    <!-- Desktop Navigation Links -->
+    <nav aria-label="Main Navigation">
+      <ul class="nav-links">
+        <li>
+          <button class="nav-btn active" id="navCatalogueBtn" aria-current="page">
+            <span>📚 Course Catalogue</span>
+          </button>
+        </li>
+        <li>
+          <button class="nav-btn" id="navDashboardBtn">
+            <span>🎓 My Dashboard</span>
+            <span class="nav-count-badge hidden" id="navEnrolledCount">0</span>
+          </button>
+        </li>
+        <li>
+          <button class="nav-btn" id="navScheduleBtn">
+            <span>📅 Class Timetable</span>
+          </button>
+        </li>
+        <li>
+          <button class="nav-btn" id="navAdminBtn">
+            <span>🛡️ Admin Portal</span>
+          </button>
+        </li>
+      </ul>
+    </nav>
+
+    <!-- Header Actions / User Status -->
+    <div class="header-actions">
+      <!-- Unauthenticated View -->
+      <div id="unauthControls" class="flex items-center gap-2">
+        <button class="btn btn-outline btn-sm" id="headerSignInBtn">Sign In</button>
+        <button class="btn btn-primary btn-sm" id="headerRegisterBtn">Register</button>
+      </div>
+
+      <!-- Authenticated Profile Menu -->
+      <div id="authControls" class="user-menu-wrapper hidden">
+        <button class="user-profile-btn" id="userMenuTrigger" aria-expanded="false" aria-haspopup="true">
+          <div class="user-avatar" id="avatarInitials">AM</div>
+          <div class="user-info-text">
+            <div class="user-name" id="navUserName">Alex Morgan</div>
+            <div class="user-role-label" id="navUserDept">Computer Science</div>
+          </div>
+          <span style="font-size: 0.75rem; color: var(--text-muted); margin-left: 2px;">▾</span>
+        </button>
+
+        <div class="user-dropdown" id="userDropdownMenu" role="menu">
+          <div class="dropdown-header">
+            <div class="dropdown-header-name" id="menuName">Alex Morgan</div>
+            <div class="dropdown-header-id" id="menuId">STU-2026-001</div>
+            <div class="dropdown-header-program" id="menuProgram">B.Tech Computer Science</div>
+          </div>
+          <button class="dropdown-item" id="menuDashboardLink" role="menuitem">
+            <span>🎓</span> View My Enrolments
+          </button>
+          <button class="dropdown-item" id="menuScheduleLink" role="menuitem">
+            <span>📅</span> View Timetable
+          </button>
+          <button class="dropdown-item" id="menuAdminLink" role="menuitem">
+            <span>🛡️</span> Admin Portal
+          </button>
+          <button class="dropdown-item danger" id="menuSignOutBtn" role="menuitem">
+            <span>🚪</span> Sign Out
+          </button>
+        </div>
+      </div>
+
+      <!-- Mobile Hamburger Button -->
+      <button class="mobile-toggle" id="mobileToggleBtn" aria-label="Open mobile menu">☰</button>
+    </div>
+  </div>
+</header>
+
+<!-- Mobile Drawer -->
+<div class="mobile-drawer" id="mobileDrawer">
+  <div class="drawer-content">
+    <div class="drawer-header">
+      <div class="flex items-center gap-2">
+        <div class="brand-logo" style="width:32px; height:32px; font-size:1rem;">🎓</div>
+        <strong>Greenfield Portal</strong>
+      </div>
+      <button class="modal-close-btn" id="mobileDrawerClose" aria-label="Close menu">&times;</button>
+    </div>
+    <div class="flex flex-col gap-2 mt-2">
+      <button class="nav-btn w-full justify-between" id="mobileNavCatalogue">
+        <span>📚 Course Catalogue</span>
+      </button>
+      <button class="nav-btn w-full justify-between" id="mobileNavDashboard">
+        <span>🎓 My Dashboard</span>
+        <span class="nav-count-badge" id="mobileNavBadge">0</span>
+      </button>
+      <button class="nav-btn w-full" id="mobileNavSchedule">
+        <span>📅 Class Timetable</span>
+      </button>
+      <button class="nav-btn w-full" id="mobileNavAdmin">
+        <span>🛡️ Admin Portal</span>
+      </button>
+    </div>
+    <div class="mt-4 pt-4" style="border-top:1px solid var(--border);" id="mobileAuthBlock">
+      <!-- Injected dynamically -->
+    </div>
+  </div>
+</div>
+
+<!-- ===== FLOATING TOASTS ===== -->
+<div class="toast-container" id="toastContainer" aria-live="polite"></div>
+
+<!-- ===== MAIN BODY WRAPPER ===== -->
+<main class="main-wrapper" id="mainContainer">
+  <!-- Content Views rendered dynamically via JavaScript:
+       - Catalogue View
+       - Dashboard View
+       - Timetable / Schedule View
+       - Authentication View (Login / Register / Forgot Password)
+       - Administrator Dashboard View
+  -->
+</main>
+
+<!-- ===== COURSE DETAIL MODAL ===== -->
+<div class="modal-overlay" id="detailModalOverlay" role="dialog" aria-modal="true" aria-labelledby="modalCourseTitle">
+  <div class="modal-card">
+    <div class="modal-header">
+      <div class="flex items-center gap-2">
+        <span class="course-code" id="modalCourseCode">CS301</span>
+        <h2 class="modal-title" id="modalCourseTitle">Course Details</h2>
+      </div>
+      <button class="modal-close-btn" id="closeDetailModal" aria-label="Close dialog">&times;</button>
+    </div>
+    <div class="modal-body" id="detailModalBody">
+      <!-- Course info populated here -->
+    </div>
+    <div class="modal-footer" id="detailModalFooter">
+      <button class="btn btn-outline" id="closeDetailModalBtn">Close</button>
+      <div id="modalActionContainer"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== WITHDRAW CONFIRMATION MODAL ===== -->
+<div class="modal-overlay" id="withdrawModalOverlay" role="dialog" aria-modal="true" aria-labelledby="withdrawTitle">
+  <div class="modal-card" style="max-width: 480px;">
+    <div class="modal-header">
+      <h2 class="modal-title" id="withdrawTitle">Confirm Course Withdrawal</h2>
+      <button class="modal-close-btn" id="closeWithdrawModal" aria-label="Close dialog">&times;</button>
+    </div>
+    <div class="modal-body">
+      <p style="color:var(--text); font-size: 0.95rem; margin-bottom: 1rem;">
+        Are you sure you want to withdraw from <strong id="withdrawCourseName">CS301</strong>?
+      </p>
+      <div style="background:var(--error-light); border:1px solid var(--error-subtle); padding:0.85rem; border-radius:var(--radius-sm); font-size:0.825rem; color:#991B1B;">
+        ⚠️ If you withdraw, your seat will be immediately released to students waiting on the waitlist. You will need to re-enrol if you change your mind later.
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" id="cancelWithdrawBtn">Cancel</button>
+      <button class="btn btn-danger" id="confirmWithdrawBtn">Yes, Withdraw Course</button>
+    </div>
+  </div>
+</div>
+
+<!-- ===== ADMIN COURSE CREATE / EDIT MODAL ===== -->
+<div class="modal-overlay" id="adminCourseModalOverlay" role="dialog" aria-modal="true" aria-labelledby="adminCourseModalTitle">
+  <div class="modal-card" style="max-width: 680px;">
+    <div class="modal-header">
+      <div class="flex items-center gap-2">
+        <span class="course-code" id="adminCourseModalBadge">NEW</span>
+        <h2 class="modal-title" id="adminCourseModalTitle">Add New Course</h2>
+      </div>
+      <button class="modal-close-btn" id="closeAdminCourseModal" aria-label="Close dialog">&times;</button>
+    </div>
+    <form id="adminCourseForm" novalidate>
+      <div class="modal-body" style="max-height: calc(85vh - 140px); overflow-y: auto;">
+        <input type="hidden" id="adminCourseId">
+        <div class="admin-form-grid mb-3">
+          <div class="form-group">
+            <label class="form-label" for="acCode">Course Code <span class="req">*</span></label>
+            <input type="text" id="acCode" class="form-input" placeholder="e.g. CS350" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="acDepartment">Department <span class="req">*</span></label>
+            <select id="acDepartment" class="form-input">
+              <option value="Computer Science">Computer Science</option>
+              <option value="Mathematics">Mathematics</option>
+              <option value="Mechanical Engineering">Mechanical Engineering</option>
+              <option value="Biology">Biology</option>
+              <option value="Business Administration">Business Administration</option>
+              <option value="Psychology">Psychology</option>
+              <option value="Humanities">Humanities</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-group mb-3">
+          <label class="form-label" for="acTitle">Course Title <span class="req">*</span></label>
+          <input type="text" id="acTitle" class="form-input" placeholder="e.g. Distributed Cloud Computing & Microservices" required>
+        </div>
+
+        <div class="admin-form-grid mb-3">
+          <div class="form-group">
+            <label class="form-label" for="acInstructor">Instructor <span class="req">*</span></label>
+            <input type="text" id="acInstructor" class="form-input" placeholder="e.g. Dr. Jennifer Hayes" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="acCredits">Credits (1-6) <span class="req">*</span></label>
+            <input type="number" id="acCredits" class="form-input" min="1" max="6" value="3" required>
+          </div>
+        </div>
+
+        <div class="admin-form-grid mb-3">
+          <div class="form-group">
+            <label class="form-label" for="acDays">Days <span class="req">*</span></label>
+            <select id="acDays" class="form-input">
+              <option value="MWF">MWF (Mon, Wed, Fri)</option>
+              <option value="TTh">TTh (Tue, Thu)</option>
+              <option value="MW">MW (Mon, Wed)</option>
+              <option value="Fri">Fri (Friday only)</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="acTimeSlot">Time Slot <span class="req">*</span></label>
+            <input type="text" id="acTimeSlot" class="form-input" placeholder="e.g. 10:00 - 11:15" value="10:00 - 11:15" required>
+          </div>
+        </div>
+
+        <div class="admin-form-grid mb-3">
+          <div class="form-group">
+            <label class="form-label" for="acRoom">Classroom / Room <span class="req">*</span></label>
+            <input type="text" id="acRoom" class="form-input" placeholder="e.g. Science Hall 302" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="acCapacity">Seat Capacity <span class="req">*</span></label>
+            <input type="number" id="acCapacity" class="form-input" min="1" max="500" value="30" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="acWaitlistCap">Waitlist Limit <span class="req">*</span></label>
+            <input type="number" id="acWaitlistCap" class="form-input" min="0" max="100" value="10" required>
+          </div>
+        </div>
+
+        <div class="form-group mb-3">
+          <label class="form-label" for="acPrereqs">Prerequisites</label>
+          <input type="text" id="acPrereqs" class="form-input" placeholder="e.g. CS201 or None" value="None">
+        </div>
+
+        <div class="form-group mb-3">
+          <label class="form-label" for="acDesc">Course Description <span class="req">*</span></label>
+          <textarea id="acDesc" class="form-input" rows="3" placeholder="Overview of the course topics, outcomes, and syllabus..."></textarea>
+        </div>
+
+        <div class="flex items-center gap-2 mt-2">
+          <input type="checkbox" id="acIsClosed" style="width:18px;height:18px;cursor:pointer;">
+          <label for="acIsClosed" style="font-size:0.875rem;font-weight:600;cursor:pointer;">Close registration immediately (students cannot enroll or waitlist)</label>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-outline" id="cancelAdminCourseBtn">Cancel</button>
+        <button type="submit" class="btn btn-primary" id="saveAdminCourseBtn">Save Course</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- ===== ADMIN STUDENT ENROLMENT INSPECT MODAL ===== -->
+<div class="modal-overlay" id="adminStudentModalOverlay" role="dialog" aria-modal="true" aria-labelledby="adminStudentModalTitle">
+  <div class="modal-card" style="max-width: 740px;">
+    <div class="modal-header">
+      <div class="flex items-center gap-2">
+        <span class="course-code" id="adminStudentModalId">STU-2026-001</span>
+        <h2 class="modal-title" id="adminStudentModalTitle">Student Enrolment Record</h2>
+      </div>
+      <button class="modal-close-btn" id="closeAdminStudentModal" aria-label="Close dialog">&times;</button>
+    </div>
+    <div class="modal-body" id="adminStudentModalBody">
+      <!-- Populated dynamically -->
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" id="closeAdminStudentModalBtn">Close</button>
+    </div>
+  </div>
+</div>
+
+<!-- ===== FOOTER ===== -->
+<footer class="site-footer">
+  <p>© 2026 Greenfield University ERP Portal · All Rights Reserved · Fall Semester Registration</p>
+</footer>
+
+<!-- ===================================================================
+     FRONTEND APPLICATION LOGIC
+     =================================================================== -->
+<script>
+// ===== CLIENT STATE =====
+const appState = {
+  user: null,               // Logged-in student or null
+  currentPage: 'catalogue', // 'catalogue' | 'dashboard' | 'schedule' | 'auth'
+  authMode: 'login',        // 'login' | 'register' | 'forgot' | 'reset'
+  courses: [],
+  dashboardData: null,
+  activeFilters: {
+    search: '',
+    department: 'All',
+    availability: 'All',
+    schedule: 'All',
+    credits: 'All'
+  },
+  resetToken: null,
+  pendingWithdrawCourseId: null,
+  isLoading: false,
+  isUsingFallback: false
+};
+
+// ===== SAMPLE FALLBACK COURSE CATALOGUE (Used if backend is offline/unreachable) =====
+const SAMPLE_COURSES = [
+  {
+    id: 7,
+    code: "BIO210",
+    title: "Genetics & Molecular Biology",
+    department: "Biology",
+    instructor: "Dr. Elena Rostova",
+    credits: 4,
+    schedule: "MWF 13:00 - 14:15",
+    days: "MWF",
+    time_slot: "13:00 - 14:15",
+    room: "Darwin Science Wing 204",
+    capacity: 25,
+    waitlist_capacity: 5,
+    is_closed: 0,
+    description: "Mendelian inheritance, chromosome dynamics, molecular structure of genes, gene regulation, genetic engineering, and bioethics.",
+    prerequisites: "BIO101 General Biology",
+    term: "Fall 2026",
+    enrolled_count: 0,
+    waitlist_count: 0,
+    seats_remaining: 25,
+    waitlist_spots_remaining: 5,
+    computed_status: "Open",
+    my_status: null,
+    my_waitlist_position: null
+  },
+  {
+    id: 8,
+    code: "BUS320",
+    title: "Corporate Finance & Strategy",
+    department: "Business Administration",
+    instructor: "Prof. Jonathan Sterling",
+    credits: 3,
+    schedule: "TTh 13:00 - 14:15",
+    days: "TTh",
+    time_slot: "13:00 - 14:15",
+    room: "School of Management 104",
+    capacity: 35,
+    waitlist_capacity: 10,
+    is_closed: 0,
+    description: "Valuation models, capital budgeting, risk and return trade-offs, financial statement analysis, capital structure, and corporate investment strategies.",
+    prerequisites: "BUS101 Principles of Accounting",
+    term: "Fall 2026",
+    enrolled_count: 0,
+    waitlist_count: 0,
+    seats_remaining: 35,
+    waitlist_spots_remaining: 10,
+    computed_status: "Open",
+    my_status: null,
+    my_waitlist_position: null
+  },
+  {
+    id: 1,
+    code: "CS301",
+    title: "Data Structures & Algorithms",
+    department: "Computer Science",
+    instructor: "Dr. Wei Chen",
+    credits: 4,
+    schedule: "MWF 09:00 - 10:15",
+    days: "MWF",
+    time_slot: "09:00 - 10:15",
+    room: "Science Hall 301",
+    capacity: 30,
+    waitlist_capacity: 5,
+    is_closed: 0,
+    description: "Fundamental data structures including balanced binary trees, heaps, hash tables, and graphs. Analysis of sorting and searching algorithms, algorithmic complexity (Big-O), and recursion.",
+    prerequisites: "CS101 Intro to Programming",
+    term: "Fall 2026",
+    enrolled_count: 1,
+    waitlist_count: 0,
+    seats_remaining: 29,
+    waitlist_spots_remaining: 5,
+    computed_status: "Open",
+    my_status: null,
+    my_waitlist_position: null
+  },
+  {
+    id: 4,
+    code: "CS310",
+    title: "Computer Networks & Communications",
+    department: "Computer Science",
+    instructor: "Prof. David Miller",
+    credits: 3,
+    schedule: "MWF 11:30 - 12:30",
+    days: "MWF",
+    time_slot: "11:30 - 12:30",
+    room: "Engineering Center 302",
+    capacity: 32,
+    waitlist_capacity: 5,
+    is_closed: 0,
+    description: "Architectural layers of computer communication, TCP/IP, routing algorithms, socket programming, network security, and modern cloud topologies.",
+    prerequisites: "CS201 Programming Fundamentals",
+    term: "Fall 2026",
+    enrolled_count: 0,
+    waitlist_count: 0,
+    seats_remaining: 32,
+    waitlist_spots_remaining: 5,
+    computed_status: "Open",
+    my_status: null,
+    my_waitlist_position: null
+  },
+  {
+    id: 2,
+    code: "CS405",
+    title: "Database Systems & Design",
+    department: "Computer Science",
+    instructor: "Prof. Sarah Williams",
+    credits: 3,
+    schedule: "TTh 11:00 - 12:15",
+    days: "TTh",
+    time_slot: "11:00 - 12:15",
+    room: "Turing Hall 205",
+    capacity: 28,
+    waitlist_capacity: 8,
+    is_closed: 0,
+    description: "Relational database design, SQL querying, indexing, transaction processing, concurrency control, and introduction to modern NoSQL and distributed stores.",
+    prerequisites: "CS201 Programming Fundamentals",
+    term: "Fall 2026",
+    enrolled_count: 1,
+    waitlist_count: 0,
+    seats_remaining: 27,
+    waitlist_spots_remaining: 8,
+    computed_status: "Open",
+    my_status: null,
+    my_waitlist_position: null
+  },
+  {
+    id: 12,
+    code: "CS490",
+    title: "Capstone Senior Design Project",
+    department: "Computer Science",
+    instructor: "Dr. Wei Chen",
+    credits: 4,
+    schedule: "MWF 15:45 - 17:00",
+    days: "MWF",
+    time_slot: "15:45 - 17:00",
+    room: "Innovation Hub Studio A",
+    capacity: 2,
+    waitlist_capacity: 3,
+    is_closed: 0,
+    description: "Collaborative multi-week software engineering project encompassing product requirements, system architecture, development, CI/CD, and showcase.",
+    prerequisites: "CS301 & CS405",
+    term: "Fall 2026",
+    enrolled_count: 2,
+    waitlist_count: 0,
+    seats_remaining: 0,
+    waitlist_spots_remaining: 3,
+    computed_status: "Waitlist Open",
+    my_status: null,
+    my_waitlist_position: null
+  },
+  {
+    id: 3,
+    code: "CS502",
+    title: "Machine Learning & Pattern Recognition",
+    department: "Computer Science",
+    instructor: "Dr. Aris Thorne",
+    credits: 4,
+    schedule: "TTh 14:00 - 15:30",
+    days: "TTh",
+    time_slot: "14:00 - 15:30",
+    room: "AI Innovation Lab 401",
+    capacity: 24,
+    waitlist_capacity: 10,
+    is_closed: 0,
+    description: "Supervised and unsupervised learning, linear models, neural networks, decision trees, reinforcement learning, and real-world evaluation methodologies.",
+    prerequisites: "MA301 Linear Algebra & CS301",
+    term: "Fall 2026",
+    enrolled_count: 0,
+    waitlist_count: 0,
+    seats_remaining: 24,
+    waitlist_spots_remaining: 10,
+    computed_status: "Open",
+    my_status: null,
+    my_waitlist_position: null
+  },
+  {
+    id: 13,
+    code: "CS599",
+    title: "Special Topics in Quantum Computing",
+    department: "Computer Science",
+    instructor: "Dr. Jennifer Hayes",
+    credits: 3,
+    schedule: "TTh 16:00 - 17:15",
+    days: "TTh",
+    time_slot: "16:00 - 17:15",
+    room: "Quantum Research Lab 102",
+    capacity: 15,
+    waitlist_capacity: 0,
+    is_closed: 1,
+    description: "Advanced exploration of quantum algorithms (Shor, Grover), qubits, entanglement, quantum circuit design, and error correction models.",
+    prerequisites: "MA301 Linear Algebra & Instructor Consent",
+    term: "Fall 2026",
+    enrolled_count: 0,
+    waitlist_count: 0,
+    seats_remaining: 15,
+    waitlist_spots_remaining: 0,
+    computed_status: "Closed",
+    my_status: null,
+    my_waitlist_position: null
+  },
+  {
+    id: 11,
+    code: "HU201",
+    title: "Technical Writing & Professional Comm",
+    department: "Humanities",
+    instructor: "Prof. Angela Thompson",
+    credits: 2,
+    schedule: "Fri 15:00 - 17:00",
+    days: "Fri",
+    time_slot: "15:00 - 17:00",
+    room: "Liberal Arts Hall 110",
+    capacity: 22,
+    waitlist_capacity: 5,
+    is_closed: 0,
+    description: "Crafting effective technical documentation, research papers, executive summaries, design specifications, and collaborative presentations.",
+    prerequisites: "None",
+    term: "Fall 2026",
+    enrolled_count: 0,
+    waitlist_count: 0,
+    seats_remaining: 22,
+    waitlist_spots_remaining: 5,
+    computed_status: "Open",
+    my_status: null,
+    my_waitlist_position: null
+  },
+  {
+    id: 6,
+    code: "MA202",
+    title: "Probability & Applied Statistics",
+    department: "Mathematics",
+    instructor: "Prof. Raymond Zhang",
+    credits: 3,
+    schedule: "TTh 09:30 - 10:45",
+    days: "TTh",
+    time_slot: "09:30 - 10:45",
+    room: "Newton Hall 112",
+    capacity: 30,
+    waitlist_capacity: 8,
+    is_closed: 0,
+    description: "Discrete and continuous distributions, random variables, hypothesis testing, regression analysis, Bayesian inference, and Monte Carlo techniques.",
+    prerequisites: "MA101 Calculus I",
+    term: "Fall 2026",
+    enrolled_count: 0,
+    waitlist_count: 0,
+    seats_remaining: 30,
+    waitlist_spots_remaining: 8,
+    computed_status: "Open",
+    my_status: null,
+    my_waitlist_position: null
+  },
+  {
+    id: 5,
+    code: "MA301",
+    title: "Linear Algebra & Matrix Theory",
+    department: "Mathematics",
+    instructor: "Dr. Priya Kumar",
+    credits: 3,
+    schedule: "MWF 10:30 - 11:30",
+    days: "MWF",
+    time_slot: "10:30 - 11:30",
+    room: "Newton Hall 108",
+    capacity: 35,
+    waitlist_capacity: 10,
+    is_closed: 0,
+    description: "Vector spaces, linear transformations, matrices, eigenvalues and eigenvectors, singular value decomposition, and computational applications.",
+    prerequisites: "MA102 Calculus II",
+    term: "Fall 2026",
+    enrolled_count: 1,
+    waitlist_count: 0,
+    seats_remaining: 34,
+    waitlist_spots_remaining: 10,
+    computed_status: "Open",
+    my_status: null,
+    my_waitlist_position: null
+  },
+  {
+    id: 10,
+    code: "ME304",
+    title: "Thermodynamics & Heat Transfer",
+    department: "Mechanical Engineering",
+    instructor: "Dr. Carlos Mendez",
+    credits: 4,
+    schedule: "TTh 08:00 - 09:30",
+    days: "TTh",
+    time_slot: "08:00 - 09:30",
+    room: "Engineering Hall 115",
+    capacity: 25,
+    waitlist_capacity: 5,
+    is_closed: 0,
+    description: "First and second laws of thermodynamics, energy conversion systems, vapor and gas power cycles, heat conduction, convection, and thermal radiation.",
+    prerequisites: "PH101 General Physics I",
+    term: "Fall 2026",
+    enrolled_count: 0,
+    waitlist_count: 0,
+    seats_remaining: 25,
+    waitlist_spots_remaining: 5,
+    computed_status: "Open",
+    my_status: null,
+    my_waitlist_position: null
+  },
+  {
+    id: 9,
+    code: "PSY205",
+    title: "Cognitive Psychology & Neuroscience",
+    department: "Psychology",
+    instructor: "Dr. Miriam Vance",
+    credits: 3,
+    schedule: "MWF 14:30 - 15:30",
+    days: "MWF",
+    time_slot: "14:30 - 15:30",
+    room: "Behavioral Sciences 210",
+    capacity: 30,
+    waitlist_capacity: 6,
+    is_closed: 0,
+    description: "Empirical investigation of perception, attention, memory retention, language acquisition, problem solving, and underlying neural mechanisms.",
+    prerequisites: "PSY101 Introduction to Psychology",
+    term: "Fall 2026",
+    enrolled_count: 0,
+    waitlist_count: 0,
+    seats_remaining: 30,
+    waitlist_spots_remaining: 6,
+    computed_status: "Open",
+    my_status: null,
+    my_waitlist_position: null
+  }
+];
+
+// Helper: Filter course list in-memory (matches backend filtering exactly)
+function filterCoursesLocally(courseList, filters = {}) {
+  return courseList.filter(course => {
+    // 1. Search keyword matching
+    if (filters.search && filters.search.trim()) {
+      const q = filters.search.trim().toLowerCase();
+      const codeMatch = (course.code || '').toLowerCase().includes(q);
+      const titleMatch = (course.title || '').toLowerCase().includes(q);
+      const instMatch = (course.instructor || '').toLowerCase().includes(q);
+      const descMatch = (course.description || '').toLowerCase().includes(q);
+      if (!codeMatch && !titleMatch && !instMatch && !descMatch) return false;
+    }
+
+    // 2. Department filter
+    if (filters.department && filters.department !== 'All') {
+      if (course.department !== filters.department) return false;
+    }
+
+    // 3. Availability filter
+    if (filters.availability && filters.availability !== 'All') {
+      const status = course.computed_status;
+      if (filters.availability === 'Open' && status !== 'Open') return false;
+      if (filters.availability === 'Waitlist' && status !== 'Waitlist Open') return false;
+      if (filters.availability === 'Full' && status !== 'Full' && status !== 'Waitlist Open' && status !== 'Closed') return false;
+    }
+
+    // 4. Schedule Day filter (MWF, TTh, Fri)
+    if (filters.schedule && filters.schedule !== 'All') {
+      const days = course.days || course.schedule || '';
+      if (!days.includes(filters.schedule)) return false;
+    }
+
+    // 5. Credits filter
+    if (filters.credits && filters.credits !== 'All') {
+      if (String(course.credits) !== String(filters.credits)) return false;
+    }
+
+    return true;
+  });
+}
+
+// Helper: Resolve dynamic backend API base URL
+function getApiBase() {
+  if (window.location.protocol.startsWith('http') && window.location.port === '5000') {
+    return '';
+  }
+  if (window.location.protocol === 'file:' || window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' || !window.location.host) {
+    return 'http://127.0.0.1:5000';
+  }
+  return '';
+}
+
+// Helper: Robust JSON API requester with fallback to port 5000 and non-JSON error prevention
+async function requestApi(endpoint, options = {}) {
+  const base = getApiBase();
+  const primaryUrl = `${base}${endpoint}`;
+
+  const fetchOpts = {
+    ...options,
+    headers: {
+      'Content-Type': 'application/json',
+      ...(options.headers || {})
+    }
+  };
+  if (base && !fetchOpts.credentials) {
+    fetchOpts.credentials = 'include';
+  }
+
+  let res;
+  let networkErr = null;
+  try {
+    res = await fetch(primaryUrl, fetchOpts);
+  } catch (err) {
+    networkErr = err;
+    // If primary relative call failed and base was empty, attempt explicit http://127.0.0.1:5000
+    if (!base && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')) {
+      try {
+        const altUrl = `http://127.0.0.1:5000${endpoint}`;
+        res = await fetch(altUrl, fetchOpts);
+        networkErr = null;
+      } catch (err2) {
+        networkErr = err2;
+      }
+    }
+  }
+
+  if (networkErr || !res) {
+    throw new Error(`Connection to server failed: ${networkErr ? networkErr.message : 'No response'}`);
+  }
+
+  const contentType = (res.headers && res.headers.get('content-type')) || '';
+  if (!contentType.includes('application/json')) {
+    const rawText = await res.text();
+    throw new Error(`Server returned non-JSON response (HTTP ${res.status}): ${rawText.substring(0, 100)}`);
+  }
+
+  const data = await res.json();
+  if (!res.ok) {
+    throw new Error(data.error || `Request failed with status ${res.status}`);
+  }
+  return data;
+}
+
+// ===== API WRAPPERS =====
+const API = {
+  async getMe() {
+    try {
+      const data = await requestApi('/api/auth/me');
+      if (data && (data.is_admin || data.role === 'admin')) {
+        return { ...data.admin, is_admin: true };
+      }
+      return data ? data.student : null;
+    } catch {
+      return null;
+    }
+  },
+
+  async login(email, password) {
+    return await requestApi('/api/auth/login', {
+      method: 'POST',
+      body: JSON.stringify({ email, password })
+    });
+  },
+
+  async register(studentData) {
+    return await requestApi('/api/auth/register', {
+      method: 'POST',
+      body: JSON.stringify(studentData)
+    });
+  },
+
+  async logout() {
+    try {
+      await requestApi('/api/auth/logout', { method: 'POST' });
+    } catch {}
+  },
+
+  async forgotPassword(email) {
+    return await requestApi('/api/auth/forgot-password', {
+      method: 'POST',
+      body: JSON.stringify({ email })
+    });
+  },
+
+  async resetPassword(token, newPassword, confirmPassword) {
+    return await requestApi('/api/auth/reset-password', {
+      method: 'POST',
+      body: JSON.stringify({
+        token,
+        new_password: newPassword,
+        confirm_password: confirmPassword
+      })
+    });
+  },
+
+  async getCourses(filters = {}) {
+    const query = new URLSearchParams();
+    if (filters.search) query.set('search', filters.search);
+    if (filters.department && filters.department !== 'All') query.set('department', filters.department);
+    if (filters.availability && filters.availability !== 'All') query.set('availability', filters.availability);
+    if (filters.schedule && filters.schedule !== 'All') query.set('schedule', filters.schedule);
+    if (filters.credits && filters.credits !== 'All') query.set('credits', filters.credits);
+
+    const queryString = query.toString() ? `?${query.toString()}` : '';
+
+    try {
+      const data = await requestApi(`/api/courses${queryString}`);
+      if (data && Array.isArray(data.courses)) {
+        appState.isUsingFallback = false;
+        return data.courses;
+      }
+      throw new Error('Malformed course data received from server');
+    } catch (err) {
+      console.warn('Backend unavailable, utilizing local Greenfield course catalogue fallback:', err.message);
+      appState.isUsingFallback = true;
+      return filterCoursesLocally(SAMPLE_COURSES, filters);
+    }
+  },
+
+  async getCourseDetail(courseId) {
+    try {
+      const data = await requestApi(`/api/courses/${courseId}`);
+      if (data && data.course) return data.course;
+      throw new Error('Course details unavailable from server');
+    } catch (err) {
+      console.warn('Backend unavailable for course details, using sample fallback:', err.message);
+      const found = SAMPLE_COURSES.find(c => c.id === Number(courseId) || c.code === String(courseId));
+      if (found) return found;
+      throw new Error('Course not found in catalogue.');
+    }
+  },
+
+  async enrollCourse(courseId) {
+    try {
+      return await requestApi('/api/enrollments', {
+        method: 'POST',
+        body: JSON.stringify({ course_id: courseId })
+      });
+    } catch (err) {
+      if (appState.isUsingFallback) {
+        const course = SAMPLE_COURSES.find(c => c.id === Number(courseId));
+        if (course) {
+          if (course.seats_remaining > 0) {
+            course.enrolled_count++;
+            course.seats_remaining = Math.max(0, course.capacity - course.enrolled_count);
+            course.my_status = 'Enrolled';
+            return { success: true, status: 'Enrolled', message: `Successfully enrolled in ${course.code}: ${course.title} (Fallback Mode)`, course };
+          } else if (course.waitlist_spots_remaining > 0) {
+            course.waitlist_count++;
+            course.waitlist_spots_remaining = Math.max(0, course.waitlist_capacity - course.waitlist_count);
+            course.my_status = 'Waitlisted';
+            course.my_waitlist_position = course.waitlist_count;
+            return { success: true, status: 'Waitlisted', message: `Added to waitlist for ${course.code} (Position #${course.my_waitlist_position})`, course };
+          } else {
+            throw new Error('Course is completely full and waitlist is closed.');
+          }
+        }
+      }
+      throw err;
+    }
+  },
+
+  async withdrawCourse(courseId) {
+    try {
+      return await requestApi(`/api/enrollments/${courseId}/withdraw`, {
+        method: 'POST'
+      });
+    } catch (err) {
+      if (appState.isUsingFallback) {
+        const course = SAMPLE_COURSES.find(c => c.id === Number(courseId));
+        if (course && course.my_status) {
+          if (course.my_status === 'Enrolled' && course.enrolled_count > 0) {
+            course.enrolled_count--;
+            course.seats_remaining = Math.max(0, course.capacity - course.enrolled_count);
+          } else if (course.my_status === 'Waitlisted' && course.waitlist_count > 0) {
+            course.waitlist_count--;
+            course.waitlist_spots_remaining = Math.max(0, course.waitlist_capacity - course.waitlist_count);
+          }
+          course.my_status = null;
+          course.my_waitlist_position = null;
+          return { success: true, message: `Successfully withdrawn from ${course.code}` };
+        }
+      }
+      throw err;
+    }
+  },
+
+  async getDashboard() {
+    try {
+      return await requestApi('/api/student/dashboard');
+    } catch (err) {
+      if (appState.isUsingFallback) {
+        return {
+          student: appState.user || { name: 'Demo Student', email: 'student@greenfield.edu', department: 'Computer Science', program: 'B.Tech CS', student_id: 'GF-2026-001' },
+          stats: { enrolled_courses: 0, waitlisted_courses: 0, total_credits: 0 },
+          enrollments: []
+        };
+      }
+      throw err;
+    }
+  },
+
+  // ===== ADMINISTRATOR APIS =====
+  async getAdminStats() {
+    return await requestApi('/api/admin/stats');
+  },
+
+  async getAdminStudents() {
+    const data = await requestApi('/api/admin/students');
+    return data.students;
+  },
+
+  async getAdminStudentEnrollments(studentId) {
+    const data = await requestApi(`/api/admin/students/${studentId}/enrollments`);
+    return data;
+  },
+
+  async getAdminEnrollments(status = 'All', courseId = null) {
+    let url = `/api/admin/enrollments?status=${encodeURIComponent(status)}`;
+    if (courseId) url += `&course_id=${encodeURIComponent(courseId)}`;
+    const data = await requestApi(url);
+    return data.enrollments;
+  },
+
+  async adminCreateCourse(courseData) {
+    return await requestApi('/api/admin/courses', {
+      method: 'POST',
+      body: JSON.stringify(courseData)
+    });
+  },
+
+  async adminUpdateCourse(courseId, courseData) {
+    return await requestApi(`/api/admin/courses/${courseId}`, {
+      method: 'PUT',
+      body: JSON.stringify(courseData)
+    });
+  },
+
+  async adminToggleCourseStatus(courseId) {
+    return await requestApi(`/api/admin/courses/${courseId}/toggle-status`, {
+      method: 'POST'
+    });
+  },
+
+  async adminDeleteCourse(courseId) {
+    return await requestApi(`/api/admin/courses/${courseId}`, {
+      method: 'DELETE'
+    });
+  },
+
+  async adminDropEnrollment(enrollmentId) {
+    return await requestApi(`/api/admin/enrollments/${enrollmentId}/drop`, {
+      method: 'POST'
+    });
+  }
+};
+
+// ===== TOAST NOTIFICATION SYSTEM =====
+function showToast(message, type = 'success', title = null) {
+  const container = document.getElementById('toastContainer');
+  const toast = document.createElement('div');
+  toast.className = `toast toast-${type}`;
+  
+  let icon = '✅';
+  let defaultTitle = 'Success';
+  if (type === 'error') { icon = '❌'; defaultTitle = 'Error'; }
+  else if (type === 'warning') { icon = '⚠️'; defaultTitle = 'Notice'; }
+  else if (type === 'info') { icon = 'ℹ️'; defaultTitle = 'Information'; }
+
+  toast.innerHTML = `
+    <span class="toast-icon">${icon}</span>
+    <div class="toast-content">
+      <div class="toast-title">${title || defaultTitle}</div>
+      <div class="toast-message">${escapeHtml(message)}</div>
+    </div>
+    <button class="toast-close" aria-label="Dismiss notification">&times;</button>
+  `;
+
+  const closeBtn = toast.querySelector('.toast-close');
+  closeBtn.addEventListener('click', () => {
+    toast.remove();
+  });
+
+  container.appendChild(toast);
+
+  // Auto dismiss after 4.5 seconds
+  setTimeout(() => {
+    if (toast.parentElement) {
+      toast.style.opacity = '0';
+      setTimeout(() => toast.remove(), 250);
+    }
+  }, 4500);
+}
+
+function escapeHtml(text) {
+  if (!text) return '';
+  return String(text)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#039;');
+}
+
+// ===== UI NAVIGATION & ROUTING =====
+function setPage(page, authMode = 'login') {
+  appState.currentPage = page;
+  appState.authMode = authMode;
+
+  // Update nav buttons active state
+  document.getElementById('navCatalogueBtn').classList.toggle('active', page === 'catalogue');
+  document.getElementById('navDashboardBtn').classList.toggle('active', page === 'dashboard');
+  document.getElementById('navScheduleBtn').classList.toggle('active', page === 'schedule');
+  const adminBtn = document.getElementById('navAdminBtn');
+  if (adminBtn) adminBtn.classList.toggle('active', page === 'admin');
+
+  // Close mobile drawer
+  document.getElementById('mobileDrawer').classList.remove('open');
+
+  // Render view
+  renderCurrentView();
+}
+
+function updateAuthUI() {
+  const unauth = document.getElementById('unauthControls');
+  const auth = document.getElementById('authControls');
+  const mobileAuth = document.getElementById('mobileAuthBlock');
+
+  if (appState.user) {
+    unauth.classList.add('hidden');
+    auth.classList.remove('hidden');
+
+    const isAdmin = appState.user.is_admin || appState.user.role === 'Administrator';
+    // Initials avatar
+    const initials = isAdmin ? 'AD' : appState.user.name.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase();
+    document.getElementById('avatarInitials').textContent = initials;
+    document.getElementById('navUserName').textContent = appState.user.name;
+    document.getElementById('navUserDept').textContent = isAdmin ? 'Registrar Administrator' : appState.user.department;
+
+    document.getElementById('menuName').textContent = appState.user.name;
+    document.getElementById('menuId').textContent = isAdmin ? 'ADMIN-OFFICE' : appState.user.student_id;
+    document.getElementById('menuProgram').textContent = isAdmin ? 'Academic Administration' : appState.user.program;
+
+    mobileAuth.innerHTML = `
+      <div class="flex items-center gap-2 mb-2">
+        <div class="user-avatar" style="width:28px;height:28px;font-size:0.75rem; ${isAdmin ? 'background:#1E40AF;' : ''}">${initials}</div>
+        <div>
+          <div style="font-weight:600;font-size:0.85rem;">${escapeHtml(appState.user.name)}</div>
+          <div style="font-size:0.75rem;color:var(--text-muted);">${escapeHtml(isAdmin ? 'Administrator' : appState.user.student_id)}</div>
+        </div>
+      </div>
+      <button class="btn btn-outline btn-sm w-full" id="mobileSignOutBtn">Sign Out</button>
+    `;
+    const mSignOut = document.getElementById('mobileSignOutBtn');
+    if (mSignOut) mSignOut.addEventListener('click', handleSignOut);
+  } else {
+    unauth.classList.remove('hidden');
+    auth.classList.add('hidden');
+
+    mobileAuth.innerHTML = `
+      <div class="flex flex-col gap-2">
+        <button class="btn btn-outline btn-sm w-full" id="mobileSignInBtn">Sign In</button>
+        <button class="btn btn-primary btn-sm w-full" id="mobileRegisterBtn">Register Account</button>
+      </div>
+    `;
+    const mSignIn = document.getElementById('mobileSignInBtn');
+    const mReg = document.getElementById('mobileRegisterBtn');
+    if (mSignIn) mSignIn.addEventListener('click', () => setPage('auth', 'login'));
+    if (mReg) mReg.addEventListener('click', () => setPage('auth', 'register'));
+  }
+}
+
+// ===== RENDER ROUTER =====
+async function renderCurrentView() {
+  const container = document.getElementById('mainContainer');
+
+  if (appState.currentPage === 'catalogue') {
+    await renderCatalogueView(container);
+  } else if (appState.currentPage === 'dashboard') {
+    if (!appState.user) {
+      showToast('Please sign in to view your dashboard.', 'info');
+      setPage('auth', 'login');
+      return;
+    }
+    await renderDashboardView(container);
+  } else if (appState.currentPage === 'schedule') {
+    if (!appState.user) {
+      showToast('Please sign in to view your class timetable.', 'info');
+      setPage('auth', 'login');
+      return;
+    }
+    await renderScheduleView(container);
+  } else if (appState.currentPage === 'admin') {
+    await renderAdminDashboardView(container);
+  } else if (appState.currentPage === 'auth') {
+    renderAuthView(container);
+  }
+}
+
+// ===================================================================
+// 1. COURSE CATALOGUE VIEW
+// ===================================================================
+async function renderCatalogueView(container) {
+  container.innerHTML = `
+    <div class="page-hero">
+      <div class="hero-tag">Fall 2026 Registration</div>
+      <h1 class="hero-title">Course Catalogue</h1>
+      <p class="hero-desc">Explore academic courses, review live capacities, enroll in subjects for your major, or join course waitlists with instantaneous updates.</p>
+    </div>
+
+    <!-- Filter Toolbar -->
+    <div class="catalogue-toolbar">
+      <div class="filter-row">
+        <div class="search-input-wrapper">
+          <span class="search-icon">🔍</span>
+          <input type="text" id="courseSearchInput" class="search-input" placeholder="Search by course code, title, instructor, or keywords..." value="${escapeHtml(appState.activeFilters.search)}">
+        </div>
+
+        <select id="deptFilter" class="filter-select" aria-label="Filter by department">
+          <option value="All">All Departments</option>
+          <option value="Computer Science">Computer Science</option>
+          <option value="Mathematics">Mathematics</option>
+          <option value="Mechanical Engineering">Mechanical Engineering</option>
+          <option value="Biology">Biology</option>
+          <option value="Business Administration">Business Admin</option>
+          <option value="Psychology">Psychology</option>
+          <option value="Humanities">Humanities</option>
+        </select>
+
+        <select id="availFilter" class="filter-select" aria-label="Filter by availability">
+          <option value="All">All Availabilities</option>
+          <option value="Open">Seats Available</option>
+          <option value="Waitlist">Waitlist Available</option>
+          <option value="Full">Full / Closed</option>
+        </select>
+
+        <select id="schedFilter" class="filter-select" aria-label="Filter by schedule">
+          <option value="All">All Days</option>
+          <option value="MWF">Mon / Wed / Fri</option>
+          <option value="TTh">Tue / Thu</option>
+          <option value="Fri">Friday Only</option>
+        </select>
+
+        <select id="creditsFilter" class="filter-select" aria-label="Filter by credits">
+          <option value="All">All Credits</option>
+          <option value="2">2 Credits</option>
+          <option value="3">3 Credits</option>
+          <option value="4">4 Credits</option>
+        </select>
+      </div>
+
+      <div class="toolbar-meta">
+        <span id="coursesFoundCount">Loading courses...</span>
+        <button class="btn btn-ghost btn-sm" id="resetFiltersBtn">Reset Filters</button>
+      </div>
+    </div>
+
+    <!-- Courses Grid -->
+    <div id="coursesListContainer">
+      <div class="empty-state">
+        <div class="spinner" style="width:28px; height:28px; border-width:3px; border-top-color:var(--primary); margin:0 auto 1rem;"></div>
+        <div class="empty-title">Loading courses...</div>
+      </div>
+    </div>
+  `;
+
+  // Sync filter dropdown values
+  document.getElementById('deptFilter').value = appState.activeFilters.department;
+  document.getElementById('availFilter').value = appState.activeFilters.availability;
+  document.getElementById('schedFilter').value = appState.activeFilters.schedule;
+  document.getElementById('creditsFilter').value = appState.activeFilters.credits;
+
+  // Bind filter events
+  const searchInput = document.getElementById('courseSearchInput');
+  let debounceTimeout;
+  searchInput.addEventListener('input', (e) => {
+    clearTimeout(debounceTimeout);
+    debounceTimeout = setTimeout(() => {
+      appState.activeFilters.search = e.target.value;
+      loadAndRenderCourses();
+    }, 250);
+  });
+
+  document.getElementById('deptFilter').addEventListener('change', (e) => {
+    appState.activeFilters.department = e.target.value;
+    loadAndRenderCourses();
+  });
+
+  document.getElementById('availFilter').addEventListener('change', (e) => {
+    appState.activeFilters.availability = e.target.value;
+    loadAndRenderCourses();
+  });
+
+  document.getElementById('schedFilter').addEventListener('change', (e) => {
+    appState.activeFilters.schedule = e.target.value;
+    loadAndRenderCourses();
+  });
+
+  document.getElementById('creditsFilter').addEventListener('change', (e) => {
+    appState.activeFilters.credits = e.target.value;
+    loadAndRenderCourses();
+  });
+
+  document.getElementById('resetFiltersBtn').addEventListener('click', () => {
+    appState.activeFilters = { search: '', department: 'All', availability: 'All', schedule: 'All', credits: 'All' };
+    renderCatalogueView(container);
+  });
+
+  // Load courses
+  await loadAndRenderCourses();
+}
+
+async function loadAndRenderCourses() {
+  const container = document.getElementById('coursesListContainer');
+  const countLabel = document.getElementById('coursesFoundCount');
+  if (!container) return;
+
+  try {
+    const courses = await API.getCourses(appState.activeFilters);
+    appState.courses = courses;
+
+    if (countLabel) {
+      countLabel.textContent = `Showing ${courses.length} ${courses.length === 1 ? 'course' : 'courses'}`;
+    }
+
+    if (courses.length === 0) {
+      container.innerHTML = `
+        <div class="empty-state">
+          <div class="empty-icon">🔍</div>
+          <div class="empty-title">No matching courses found</div>
+          <div class="empty-desc">Try loosening your search keywords or resetting the department and schedule filters.</div>
+          <button class="btn btn-outline" id="emptyResetBtn">Clear All Filters</button>
+        </div>
+      `;
+      const btn = document.getElementById('emptyResetBtn');
+      if (btn) btn.addEventListener('click', () => {
+        appState.activeFilters = { search: '', department: 'All', availability: 'All', schedule: 'All', credits: 'All' };
+        renderCatalogueView(document.getElementById('mainContainer'));
+      });
+      return;
+    }
+
+    let html = '<div class="courses-grid">';
+    courses.forEach(c => {
+      const isEnrolled = c.my_status === 'Enrolled';
+      const isWaitlisted = c.my_status === 'Waitlisted';
+      
+      let cardClass = 'course-card';
+      if (isEnrolled) cardClass += ' is-enrolled';
+      else if (isWaitlisted) cardClass += ' is-waitlisted';
+
+      // Badge logic
+      let badgeHtml = '';
+      if (isEnrolled) {
+        badgeHtml = '<span class="badge badge-enrolled">✓ Enrolled</span>';
+      } else if (isWaitlisted) {
+        badgeHtml = `<span class="badge badge-waitlist">⏳ Waitlist #${c.my_waitlist_position}</span>`;
+      } else if (c.computed_status === 'Closed') {
+        badgeHtml = '<span class="badge badge-closed">Closed</span>';
+      } else if (c.computed_status === 'Open') {
+        badgeHtml = `<span class="badge badge-open">🟢 ${c.seats_remaining} seats open</span>`;
+      } else if (c.computed_status === 'Waitlist Open') {
+        badgeHtml = `<span class="badge badge-waitlist">🟣 Waitlist (${c.waitlist_spots_remaining} left)</span>`;
+      } else {
+        badgeHtml = '<span class="badge badge-full">🔴 Full</span>';
+      }
+
+      // Fill percentage
+      const fillPct = Math.min(100, Math.round((c.enrolled_count / c.capacity) * 100));
+      let fillClass = 'fill-green';
+      if (fillPct >= 100) fillClass = 'fill-red';
+      else if (fillPct >= 80) fillClass = 'fill-amber';
+
+      // Action Button
+      let actionBtnHtml = '';
+      if (isEnrolled) {
+        actionBtnHtml = `
+          <button class="btn btn-outline btn-sm" onclick="openCourseDetail(${c.id})">Details</button>
+          <button class="btn btn-danger btn-sm" onclick="promptWithdraw(${c.id}, '${escapeHtml(c.code)}')">Withdraw</button>
+        `;
+      } else if (isWaitlisted) {
+        actionBtnHtml = `
+          <button class="btn btn-outline btn-sm" onclick="openCourseDetail(${c.id})">Details</button>
+          <button class="btn btn-ghost btn-sm" onclick="promptWithdraw(${c.id}, '${escapeHtml(c.code)}')">Leave Waitlist</button>
+        `;
+      } else if (c.computed_status === 'Closed') {
+        actionBtnHtml = `
+          <button class="btn btn-outline btn-sm" onclick="openCourseDetail(${c.id})">Details</button>
+          <button class="btn btn-outline btn-sm" disabled>Registration Closed</button>
+        `;
+      } else if (c.computed_status === 'Open') {
+        actionBtnHtml = `
+          <button class="btn btn-outline btn-sm" onclick="openCourseDetail(${c.id})">Details</button>
+          <button class="btn btn-primary btn-sm" onclick="handleEnrolAction(${c.id})">Enrol Now</button>
+        `;
+      } else if (c.computed_status === 'Waitlist Open') {
+        actionBtnHtml = `
+          <button class="btn btn-outline btn-sm" onclick="openCourseDetail(${c.id})">Details</button>
+          <button class="btn btn-accent btn-sm" onclick="handleEnrolAction(${c.id})">Join Waitlist</button>
+        `;
+      } else {
+        actionBtnHtml = `
+          <button class="btn btn-outline btn-sm" onclick="openCourseDetail(${c.id})">Details</button>
+          <button class="btn btn-outline btn-sm" disabled>Course Full</button>
+        `;
+      }
+
+      // Unique per-course realistic photo images (Unsplash, free, no API key needed)
+      const courseImages = {
+        // Biology
+        'BIO210': 'https://images.unsplash.com/photo-1530026405186-ed1f139313f8?w=700&q=85',  // DNA / genetics lab
+        // Business Administration
+        'BUS320': 'https://images.unsplash.com/photo-1554224155-6726b3ff858f?w=700&q=85',  // Finance & strategy charts
+        // Computer Science
+        'CS301':  'https://images.unsplash.com/photo-1516116216624-53e697fedbea?w=700&q=85',  // Data structures / algorithms
+        'CS310':  'https://images.unsplash.com/photo-1558494949-ef010cbdcc31?w=700&q=85',  // Computer networks / cables
+        'CS405':  'https://images.unsplash.com/photo-1544383835-bda2bc66a55d?w=700&q=85',  // Database / servers
+        'CS490':  'https://images.unsplash.com/photo-1581092918056-0c4c3acd3789?w=700&q=85',  // Senior design / engineering project
+        'CS502':  'https://images.unsplash.com/photo-1677442136019-21780ecad995?w=700&q=85',  // Machine learning / AI neural
+        'CS599':  'https://images.unsplash.com/photo-1635070041078-e363dbe005cb?w=700&q=85',  // Quantum computing
+        // Humanities
+        'HU201':  'https://images.unsplash.com/photo-1455390582262-044cdead277a?w=700&q=85',  // Writing / pen on paper
+        // Mathematics
+        'MA202':  'https://images.unsplash.com/photo-1509228468518-180dd4864904?w=700&q=85',  // Statistics / probability
+        'MA301':  'https://images.unsplash.com/photo-1596495578065-6e0763fa1178?w=700&q=85',  // Linear algebra / matrices
+        // Mechanical Engineering
+        'ME304':  'https://images.unsplash.com/photo-1581092162384-8987c1d64718?w=700&q=85',  // Thermodynamics / heat engine
+        // Psychology
+        'PSY205': 'https://images.unsplash.com/photo-1559757175-5700dde675bc?w=700&q=85',  // Cognitive psychology / brain scan
+      };
+      // Fallback to local department images
+      const deptFallbacks = {
+        'Computer Science':        '/static/images/courses/cs.jpg',
+        'Mathematics':             '/static/images/courses/math.jpg',
+        'Mechanical Engineering':  '/static/images/courses/mech.jpg',
+        'Biology':                 '/static/images/courses/bio.jpg',
+        'Business Administration': '/static/images/courses/biz.jpg',
+        'Psychology':              '/static/images/courses/psych.jpg',
+        'Humanities':              'https://images.unsplash.com/photo-1507842217343-583bb7270b66?w=700&q=85',
+        'default':                 'https://images.unsplash.com/photo-1523050854058-8df90110c9f1?w=700&q=85'
+      };
+      const imgSrc = courseImages[c.code] || deptFallbacks[c.department] || deptFallbacks['default'];
+
+
+      html += `
+        <article class="${cardClass}" id="course-card-${c.id}">
+
+          <!-- Course Realistic Photo Banner -->
+          <div class="course-banner course-banner-photo" style="background-image: url('${imgSrc}');">
+            <div class="course-banner-overlay"></div>
+            <div class="course-banner-text">
+              <div class="course-banner-code">${escapeHtml(c.code)}</div>
+              <div class="course-banner-title">${escapeHtml(c.title)}</div>
+              <div class="course-banner-dept">${escapeHtml(c.department)}</div>
+            </div>
+            <div class="course-banner-badge">${badgeHtml}</div>
+          </div>
+
+          <div class="course-card-header" style="padding-top:0.85rem;">
+            <div class="course-code-wrap">
+              <span class="course-code">${escapeHtml(c.code)}</span>
+              <span class="course-dept-tag">${escapeHtml(c.department)}</span>
+            </div>
+          </div>
+
+          <p class="course-desc" style="margin-top:0;">${escapeHtml(c.description)}</p>
+
+          <div class="course-details-list">
+            <div class="detail-item">
+              <span class="detail-icon">👨‍🏫</span>
+              <span><strong>${escapeHtml(c.instructor)}</strong></span>
+            </div>
+            <div class="detail-item">
+              <span class="detail-icon">📅</span>
+              <span>${escapeHtml(c.schedule)} &nbsp;·&nbsp; 📍 ${escapeHtml(c.room)}</span>
+            </div>
+            <div class="detail-item">
+              <span class="detail-icon">🎓</span>
+              <span>${c.credits} Credit Hours &nbsp;·&nbsp; Term: ${escapeHtml(c.term)}</span>
+            </div>
+          </div>
+
+          <div class="seat-capacity-meter">
+            <div class="meter-label">
+              <span>Enrolment Capacity</span>
+              <span>${c.enrolled_count} / ${c.capacity} (${c.seats_remaining} seats remaining)</span>
+            </div>
+            <div class="meter-bar">
+              <div class="meter-fill ${fillClass}" style="width: ${fillPct}%"></div>
+            </div>
+          </div>
+
+          <div class="course-card-actions">
+            ${actionBtnHtml}
+          </div>
+        </article>
+      `;
+    });
+    html += '</div>';
+
+    container.innerHTML = html;
+  } catch (err) {
+    container.innerHTML = `
+      <div class="empty-state">
+        <div class="empty-icon">⚠️</div>
+        <div class="empty-title">Error loading courses</div>
+        <div class="empty-desc">${escapeHtml(err.message)}</div>
+        <button class="btn btn-primary" onclick="loadAndRenderCourses()">Retry</button>
+      </div>
+    `;
+  }
+}
+
+// ===================================================================
+// 2. STUDENT DASHBOARD VIEW
+// ===================================================================
+async function renderDashboardView(container) {
+  container.innerHTML = `
+    <div class="empty-state">
+      <div class="spinner" style="width:28px; height:28px; border-width:3px; border-top-color:var(--primary); margin:0 auto 1rem;"></div>
+      <div class="empty-title">Loading your dashboard...</div>
+    </div>
+  `;
+
+  try {
+    const data = await API.getDashboard();
+    appState.dashboardData = data;
+    const { student, stats, enrollments } = data;
+
+    // Update nav badge count
+    const badge = document.getElementById('navEnrolledCount');
+    if (badge) {
+      badge.textContent = stats.enrolled_courses;
+      badge.classList.toggle('hidden', stats.enrolled_courses === 0);
+    }
+    const mBadge = document.getElementById('mobileNavBadge');
+    if (mBadge) mBadge.textContent = stats.enrolled_courses;
+
+    let enrolRowsHtml = '';
+    const activeEnrols = enrollments.filter(e => e.enrollment_status === 'Enrolled');
+    const waitlistedEnrols = enrollments.filter(e => e.enrollment_status === 'Waitlisted');
+    const withdrawnEnrols = enrollments.filter(e => e.enrollment_status === 'Withdrawn');
+
+    enrollments.forEach(e => {
+      let statusBadge = '';
+      let actionButtons = '';
+
+      if (e.enrollment_status === 'Enrolled') {
+        statusBadge = '<span class="badge badge-enrolled">✓ Enrolled</span>';
+        actionButtons = `
+          <button class="btn btn-outline btn-sm" onclick="openCourseDetail(${e.course_id})">Details</button>
+          <button class="btn btn-danger btn-sm" onclick="promptWithdraw(${e.course_id}, '${escapeHtml(e.code)}')">Withdraw</button>
+        `;
+      } else if (e.enrollment_status === 'Waitlisted') {
+        statusBadge = `<span class="badge badge-waitlist">⏳ Waitlist Position #${e.waitlist_position}</span>`;
+        actionButtons = `
+          <button class="btn btn-outline btn-sm" onclick="openCourseDetail(${e.course_id})">Details</button>
+          <button class="btn btn-ghost btn-sm" onclick="promptWithdraw(${e.course_id}, '${escapeHtml(e.code)}')">Leave Waitlist</button>
+        `;
+      } else {
+        statusBadge = '<span class="badge badge-withdrawn">Withdrawn</span>';
+        actionButtons = `
+          <button class="btn btn-outline btn-sm" onclick="openCourseDetail(${e.course_id})">View Course</button>
+        `;
+      }
+
+      enrolRowsHtml += `
+        <tr>
+          <td>
+            <div class="flex items-center gap-2">
+              <span class="course-code">${escapeHtml(e.code)}</span>
+              <strong>${escapeHtml(e.title)}</strong>
+            </div>
+            <div class="text-xs text-muted mt-1">${escapeHtml(e.department)} · ${escapeHtml(e.instructor)}</div>
+          </td>
+          <td>${e.credits} cr</td>
+          <td>
+            <div>${escapeHtml(e.schedule)}</div>
+            <div class="text-xs text-muted">Room: ${escapeHtml(e.room)}</div>
+          </td>
+          <td>${statusBadge}</td>
+          <td>
+            <div class="flex items-center gap-2 justify-end">
+              ${actionButtons}
+            </div>
+          </td>
+        </tr>
+      `;
+    });
+
+    container.innerHTML = `
+      <div class="page-hero">
+        <div class="hero-tag">Student Dashboard · Fall 2026</div>
+        <h1 class="hero-title">Welcome back, ${escapeHtml(student.name)}!</h1>
+        <p class="hero-desc">
+          <strong>Student ID:</strong> ${escapeHtml(student.student_id)} &nbsp;·&nbsp;
+          <strong>Program:</strong> ${escapeHtml(student.program)} &nbsp;·&nbsp;
+          <strong>Department:</strong> ${escapeHtml(student.department)}
+        </p>
+      </div>
+
+      <!-- Quick Stats Strip -->
+      <div class="stats-strip">
+        <div class="stat-box">
+          <div class="stat-box-content">
+            <span class="stat-box-num">${stats.enrolled_courses}</span>
+            <span class="stat-box-label">Enrolled Courses</span>
+          </div>
+          <div class="stat-box-icon blue">📚</div>
+        </div>
+
+        <div class="stat-box">
+          <div class="stat-box-content">
+            <span class="stat-box-num">${stats.waitlisted_courses}</span>
+            <span class="stat-box-label">Waitlisted Courses</span>
+          </div>
+          <div class="stat-box-icon purple">⏳</div>
+        </div>
+
+        <div class="stat-box">
+          <div class="stat-box-content">
+            <span class="stat-box-num">${stats.withdrawn_courses}</span>
+            <span class="stat-box-label">Withdrawn Courses</span>
+          </div>
+          <div class="stat-box-icon amber">📋</div>
+        </div>
+      </div>
+
+      <!-- Enrolments Management Table -->
+      <div style="background:white; border:1px solid var(--border); border-radius:var(--radius); padding:1.5rem; box-shadow:var(--shadow-sm); margin-bottom:2rem;">
+        <div class="flex items-center justify-between mb-4">
+          <div>
+            <h2 style="font-size:1.25rem; font-weight:700;">My Registered Courses</h2>
+            <p class="text-sm text-muted">Review your current subjects, class venues, and waitlist rankings.</p>
+          </div>
+          <button class="btn btn-primary btn-sm" onclick="setPage('catalogue')">+ Register New Courses</button>
+        </div>
+
+        ${enrollments.length === 0 ? `
+          <div class="empty-state">
+            <div class="empty-icon">🎒</div>
+            <div class="empty-title">You have not enrolled in any courses yet</div>
+            <div class="empty-desc">Head over to the course catalogue to explore open subjects for this semester and secure your schedule!</div>
+            <button class="btn btn-primary" onclick="setPage('catalogue')">Browse Course Catalogue</button>
+          </div>
+        ` : `
+          <div class="courses-table-container">
+            <table class="courses-table">
+              <thead>
+                <tr>
+                  <th>Course Code & Title</th>
+                  <th>Credits</th>
+                  <th>Schedule & Venue</th>
+                  <th>Enrolment Status</th>
+                  <th style="text-align:right;">Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${enrolRowsHtml}
+              </tbody>
+            </table>
+          </div>
+        `}
+      </div>
+    `;
+  } catch (err) {
+    container.innerHTML = `
+      <div class="empty-state">
+        <div class="empty-icon">⚠️</div>
+        <div class="empty-title">Error loading dashboard</div>
+        <div class="empty-desc">${escapeHtml(err.message)}</div>
+        <button class="btn btn-primary" onclick="renderDashboardView(document.getElementById('mainContainer'))">Retry</button>
+      </div>
+    `;
+  }
+}
+
+// ===================================================================
+// 3. WEEKLY CLASS TIMETABLE VIEW
+// ===================================================================
+async function renderScheduleView(container) {
+  container.innerHTML = `
+    <div class="page-hero">
+      <div class="hero-tag">Class Timetable</div>
+      <h1 class="hero-title">Weekly Schedule</h1>
+      <p class="hero-desc">Visual weekly timetable of your confirmed enrolled courses across Monday through Friday.</p>
+    </div>
+
+    <div class="schedule-container">
+      <div class="flex items-center justify-between mb-4">
+        <div>
+          <h2 style="font-size:1.15rem; font-weight:700;">Fall 2026 Class Schedule</h2>
+          <p class="text-sm text-muted">Click any scheduled lecture slot to view full course information.</p>
+        </div>
+        <button class="btn btn-outline btn-sm" onclick="setPage('catalogue')">Add More Classes</button>
+      </div>
+
+      <div class="schedule-grid-wrap" id="scheduleMatrixContainer">
+        <div class="spinner" style="width:28px; height:28px; border-width:3px; border-top-color:var(--primary); margin:2rem auto;"></div>
+      </div>
+    </div>
+  `;
+
+  try {
+    const data = await API.getDashboard();
+    const enrolled = (data.enrollments || []).filter(e => e.enrollment_status === 'Enrolled');
+
+    const matrixContainer = document.getElementById('scheduleMatrixContainer');
+    if (!matrixContainer) return;
+
+    if (enrolled.length === 0) {
+      matrixContainer.innerHTML = `
+        <div class="empty-state">
+          <div class="empty-icon">📅</div>
+          <div class="empty-title">No enrolled classes to display</div>
+          <div class="empty-desc">Once you enroll in courses from the catalogue, your personalized weekly timetable will automatically render here!</div>
+          <button class="btn btn-primary" onclick="setPage('catalogue')">Explore Course Catalogue</button>
+        </div>
+      `;
+      return;
+    }
+
+    // Standard time slots:
+    // Slot 1: 09:00 - 10:15
+    // Slot 2: 10:30 - 11:30
+    // Slot 3: 11:30 - 12:30
+    // Slot 4: 13:00 - 14:15
+    // Slot 5: 14:30 - 15:30
+    // Slot 6: 15:45 - 17:00
+    const timeSlots = [
+      { label: '09:00 - 10:15', slotId: 'slot1' },
+      { label: '10:30 - 11:30', slotId: 'slot2' },
+      { label: '11:30 - 12:30', slotId: 'slot3' },
+      { label: '13:00 - 14:15', slotId: 'slot4' },
+      { label: '14:30 - 15:30', slotId: 'slot5' },
+      { label: '15:45 - 17:00', slotId: 'slot6' }
+    ];
+
+    const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'];
+    const dayCodes = {
+      'Monday': 'M',
+      'Tuesday': 'T',
+      'Wednesday': 'W',
+      'Thursday': 'Th',
+      'Friday': 'F'
+    };
+
+    // Helper to see if a course meets on a specific day
+    function courseMeetsOnDay(course, dayName) {
+      const daysStr = course.days || '';
+      if (dayName === 'Monday') return daysStr.includes('M') && !daysStr.startsWith('TTh');
+      if (dayName === 'Tuesday') return daysStr.includes('TTh') || (daysStr.includes('T') && !daysStr.includes('Sat'));
+      if (dayName === 'Wednesday') return daysStr.includes('W');
+      if (dayName === 'Thursday') return daysStr.includes('Th');
+      if (dayName === 'Friday') return daysStr.includes('F') || daysStr.includes('Fri');
+      return false;
+    }
+
+    // Helper to check if course schedule matches slot
+    function courseMatchesSlot(course, slot) {
+      const schedule = course.schedule || '';
+      const startSlot = slot.label.split(' - ')[0];
+      return schedule.includes(startSlot);
+    }
+
+    let gridHtml = '<div class="schedule-matrix">';
+    // Corner
+    gridHtml += '<div class="matrix-time-header">Time</div>';
+    days.forEach(d => {
+      gridHtml += `<div class="matrix-day-header">${d}</div>`;
+    });
+
+    timeSlots.forEach(slot => {
+      gridHtml += `<div class="matrix-time-header">${slot.label}</div>`;
+
+      days.forEach(day => {
+        // Find matching course for this day and slot
+        const match = enrolled.find(c => courseMeetsOnDay(c, day) && courseMatchesSlot(c, slot));
+
+        if (match) {
+          gridHtml += `
+            <div class="matrix-slot-cell" style="background:#EFF6FF; border:1px solid #BFDBFE;">
+              <div class="schedule-class-block" onclick="openCourseDetail(${match.course_id})" title="${escapeHtml(match.title)}">
+                <div class="class-block-code">${escapeHtml(match.code)}</div>
+                <div class="class-block-title">${escapeHtml(match.title)}</div>
+                <div class="class-block-room">📍 ${escapeHtml(match.room)}</div>
+              </div>
+            </div>
+          `;
+        } else {
+          gridHtml += '<div class="matrix-slot-cell"></div>';
+        }
+      });
+    });
+
+    gridHtml += '</div>';
+    matrixContainer.innerHTML = gridHtml;
+  } catch (err) {
+    matrixContainer.innerHTML = `<div class="empty-state"><div class="empty-title">Error rendering schedule: ${escapeHtml(err.message)}</div></div>`;
+  }
+}
+
+// ===================================================================
+// 4. AUTHENTICATION VIEW (LOGIN / REGISTER / FORGOT / RESET)
+// ===================================================================
+function renderAuthView(container) {
+  let contentHtml = '';
+
+  if (appState.authMode === 'login') {
+    contentHtml = `
+      <div class="auth-page">
+        <div class="auth-header">
+          <div style="font-size:2.2rem; margin-bottom:0.35rem;">🎓</div>
+          <h2 style="font-size:1.4rem; font-weight:700;">Student Sign In</h2>
+          <p style="font-size:0.875rem; opacity:0.85;">Access your course enrolments and academic dashboard</p>
+        </div>
+        <div class="auth-body">
+          <div class="auth-tabs" role="tablist">
+            <button class="auth-tab-btn active" onclick="setPage('auth', 'login')">Sign In</button>
+            <button class="auth-tab-btn" onclick="setPage('auth', 'register')">Create Account</button>
+          </div>
+
+          <form id="signInForm" novalidate>
+            <div class="form-group">
+              <label class="form-label" for="loginInput">Email or Student ID <span class="req">*</span></label>
+              <input type="text" id="loginInput" class="form-input" placeholder="e.g. alex.morgan@greenfield.edu or STU-2026-001" required autocomplete="username">
+              <div class="field-error" id="loginInputErr">Please enter your email or Student ID.</div>
+            </div>
+
+            <div class="form-group">
+              <div class="flex items-center justify-between mb-1">
+                <label class="form-label" for="passwordInput" style="margin-bottom:0;">Password <span class="req">*</span></label>
+                <button type="button" class="btn btn-ghost btn-sm" style="padding:0; font-size:0.8rem; color:var(--primary);" onclick="setPage('auth', 'forgot')">Forgot password?</button>
+              </div>
+              <input type="password" id="passwordInput" class="form-input" placeholder="Enter your password" required autocomplete="current-password">
+              <div class="field-error" id="passwordInputErr">Password is required.</div>
+            </div>
+
+            <button type="submit" class="btn btn-primary btn-block mt-4" id="submitLoginBtn">
+              <span>Sign In to Portal</span>
+            </button>
+          </form>
+
+          <div class="quick-demo-box">
+            <div class="flex items-center justify-between mb-1">
+              <strong>🔑 Demo Student Account</strong>
+              <button class="btn btn-outline btn-sm" id="fillDemoBtn" style="padding:0.2rem 0.5rem; font-size:0.75rem;">Fill Student</button>
+            </div>
+            <p style="color:var(--text-secondary); margin-bottom:0.5rem;">Email: <code>alex.morgan@greenfield.edu</code> &nbsp;|&nbsp; Pass: <code>demo123</code></p>
+            <div class="flex items-center justify-between pt-2" style="border-top:1px dashed #BAE6FD;">
+              <strong>🛡️ Demo Admin Account</strong>
+              <button class="btn btn-outline btn-sm" id="fillAdminDemoBtn" style="padding:0.2rem 0.5rem; font-size:0.75rem;">Fill Admin</button>
+            </div>
+            <p style="color:var(--text-secondary);">Email: <code>admin@greenfield.edu</code> &nbsp;|&nbsp; Pass: <code>admin123</code></p>
+          </div>
+        </div>
+      </div>
+    `;
+  } else if (appState.authMode === 'register') {
+    contentHtml = `
+      <div class="auth-page">
+        <div class="auth-header">
+          <div style="font-size:2.2rem; margin-bottom:0.35rem;">📝</div>
+          <h2 style="font-size:1.4rem; font-weight:700;">Student Registration</h2>
+          <p style="font-size:0.875rem; opacity:0.85;">Join Greenfield University's Course Portal</p>
+        </div>
+        <div class="auth-body">
+          <div class="auth-tabs" role="tablist">
+            <button class="auth-tab-btn" onclick="setPage('auth', 'login')">Sign In</button>
+            <button class="auth-tab-btn active" onclick="setPage('auth', 'register')">Create Account</button>
+          </div>
+
+          <form id="registerForm" novalidate>
+            <div class="form-group">
+              <label class="form-label" for="regName">Full Legal Name <span class="req">*</span></label>
+              <input type="text" id="regName" class="form-input" placeholder="e.g. Maya Lin" required>
+              <div class="field-error" id="regNameErr">Please enter your full name (minimum 2 characters).</div>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="regEmail">Student Email Address <span class="req">*</span></label>
+              <input type="email" id="regEmail" class="form-input" placeholder="e.g. maya.lin@greenfield.edu" required>
+              <div class="field-error" id="regEmailErr">Please enter a valid email address.</div>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="regDept">Academic Department <span class="req">*</span></label>
+              <select id="regDept" class="form-input">
+                <option value="Computer Science">Computer Science</option>
+                <option value="Mathematics">Mathematics</option>
+                <option value="Mechanical Engineering">Mechanical Engineering</option>
+                <option value="Biology">Biology</option>
+                <option value="Business Administration">Business Administration</option>
+                <option value="Psychology">Psychology</option>
+                <option value="Humanities">Humanities</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="regPassword">Password <span class="req">*</span></label>
+              <input type="password" id="regPassword" class="form-input" placeholder="Minimum 6 characters" required>
+              <div class="field-error" id="regPasswordErr">Password must be at least 6 characters long.</div>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="regConfirmPassword">Confirm Password <span class="req">*</span></label>
+              <input type="password" id="regConfirmPassword" class="form-input" placeholder="Re-enter password" required>
+              <div class="field-error" id="regConfirmPasswordErr">Passwords do not match.</div>
+            </div>
+
+            <button type="submit" class="btn btn-primary btn-block mt-4" id="submitRegBtn">
+              <span>Complete Registration</span>
+            </button>
+          </form>
+        </div>
+      </div>
+    `;
+  } else if (appState.authMode === 'forgot') {
+    contentHtml = `
+      <div class="auth-page">
+        <div class="auth-header">
+          <div style="font-size:2.2rem; margin-bottom:0.35rem;">🔐</div>
+          <h2 style="font-size:1.4rem; font-weight:700;">Password Recovery</h2>
+          <p style="font-size:0.875rem; opacity:0.85;">Reset your student portal access credentials</p>
+        </div>
+        <div class="auth-body">
+          <p class="text-sm text-secondary mb-4">Enter your registered Greenfield email address to generate a secure password reset link.</p>
+
+          <form id="forgotForm" novalidate>
+            <div class="form-group">
+              <label class="form-label" for="forgotEmail">Email Address <span class="req">*</span></label>
+              <input type="email" id="forgotEmail" class="form-input" placeholder="e.g. alex.morgan@greenfield.edu" required>
+              <div class="field-error" id="forgotEmailErr">Please enter a valid registered email.</div>
+            </div>
+
+            <button type="submit" class="btn btn-primary btn-block mt-4" id="submitForgotBtn">
+              <span>Generate Reset Link</span>
+            </button>
+            <button type="button" class="btn btn-ghost btn-block mt-2" onclick="setPage('auth', 'login')">
+              Back to Sign In
+            </button>
+          </form>
+
+          <div id="forgotResultBox" class="mt-4 hidden" style="background:#F0FDF4; border:1px solid #BBF7D0; border-radius:var(--radius-sm); padding:1rem; font-size:0.85rem;">
+            <div style="font-weight:700; color:#166534; margin-bottom:0.35rem;">✅ Reset Link Generated!</div>
+            <p style="color:#15803D; margin-bottom:0.75rem;">In local development mode, you can immediately proceed to set your new password using this generated token:</p>
+            <button class="btn btn-secondary btn-sm btn-block" id="proceedResetBtn">Enter New Password Now →</button>
+          </div>
+        </div>
+      </div>
+    `;
+  } else if (appState.authMode === 'reset') {
+    contentHtml = `
+      <div class="auth-page">
+        <div class="auth-header">
+          <div style="font-size:2.2rem; margin-bottom:0.35rem;">🔑</div>
+          <h2 style="font-size:1.4rem; font-weight:700;">Set New Password</h2>
+          <p style="font-size:0.875rem; opacity:0.85;">Create a new secure password for your account</p>
+        </div>
+        <div class="auth-body">
+          <form id="resetForm" novalidate>
+            <div class="form-group">
+              <label class="form-label" for="resetTokenInput">Reset Token <span class="req">*</span></label>
+              <input type="text" id="resetTokenInput" class="form-input" placeholder="Paste reset token" value="${escapeHtml(appState.resetToken || '')}" required>
+              <div class="field-error" id="resetTokenErr">Valid reset token is required.</div>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="resetNewPassword">New Password <span class="req">*</span></label>
+              <input type="password" id="resetNewPassword" class="form-input" placeholder="Minimum 6 characters" required>
+              <div class="field-error" id="resetNewPasswordErr">Password must be at least 6 characters.</div>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="resetConfirmPassword">Confirm New Password <span class="req">*</span></label>
+              <input type="password" id="resetConfirmPassword" class="form-input" placeholder="Re-enter new password" required>
+              <div class="field-error" id="resetConfirmPasswordErr">Passwords do not match.</div>
+            </div>
+
+            <button type="submit" class="btn btn-primary btn-block mt-4" id="submitResetBtn">
+              <span>Save New Password</span>
+            </button>
+            <button type="button" class="btn btn-ghost btn-block mt-2" onclick="setPage('auth', 'login')">
+              Cancel
+            </button>
+          </form>
+        </div>
+      </div>
+    `;
+  }
+
+  container.innerHTML = contentHtml;
+
+  // Bind Form handlers
+  if (appState.authMode === 'login') {
+    const form = document.getElementById('signInForm');
+    const fillBtn = document.getElementById('fillDemoBtn');
+    const fillAdminBtn = document.getElementById('fillAdminDemoBtn');
+
+    if (fillBtn) {
+      fillBtn.addEventListener('click', () => {
+        document.getElementById('loginInput').value = 'alex.morgan@greenfield.edu';
+        document.getElementById('passwordInput').value = 'demo123';
+      });
+    }
+
+    if (fillAdminBtn) {
+      fillAdminBtn.addEventListener('click', () => {
+        document.getElementById('loginInput').value = 'admin@greenfield.edu';
+        document.getElementById('passwordInput').value = 'admin123';
+      });
+    }
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const loginVal = document.getElementById('loginInput').value.trim();
+      const passVal = document.getElementById('passwordInput').value;
+
+      let valid = true;
+      if (!loginVal) {
+        document.getElementById('loginInputErr').classList.add('show');
+        valid = false;
+      } else {
+        document.getElementById('loginInputErr').classList.remove('show');
+      }
+
+      if (!passVal) {
+        document.getElementById('passwordInputErr').classList.add('show');
+        valid = false;
+      } else {
+        document.getElementById('passwordInputErr').classList.remove('show');
+      }
+
+      if (!valid) return;
+
+      const submitBtn = document.getElementById('submitLoginBtn');
+      submitBtn.disabled = true;
+      submitBtn.innerHTML = '<span class="spinner"></span> Signing in...';
+
+      try {
+        const res = await API.login(loginVal, passVal);
+        if (res.role === 'admin' || res.admin) {
+          appState.user = { ...res.admin, is_admin: true };
+          updateAuthUI();
+          showToast(res.message || 'Signed in as Administrator!', 'success');
+          setPage('admin');
+        } else {
+          appState.user = res.student;
+          updateAuthUI();
+          showToast(res.message || 'Signed in successfully!', 'success');
+          setPage('dashboard');
+        }
+      } catch (err) {
+        showToast(err.message, 'error');
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = 'Sign In to Portal';
+      }
+    });
+  } else if (appState.authMode === 'register') {
+    const form = document.getElementById('registerForm');
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const name = document.getElementById('regName').value.trim();
+      const email = document.getElementById('regEmail').value.trim();
+      const dept = document.getElementById('regDept').value;
+      const pwd = document.getElementById('regPassword').value;
+      const confPwd = document.getElementById('regConfirmPassword').value;
+
+      let valid = true;
+      if (!name || name.length < 2) {
+        document.getElementById('regNameErr').classList.add('show');
+        valid = false;
+      } else {
+        document.getElementById('regNameErr').classList.remove('show');
+      }
+
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!email || !emailRegex.test(email)) {
+        document.getElementById('regEmailErr').classList.add('show');
+        valid = false;
+      } else {
+        document.getElementById('regEmailErr').classList.remove('show');
+      }
+
+      if (!pwd || pwd.length < 6) {
+        document.getElementById('regPasswordErr').classList.add('show');
+        valid = false;
+      } else {
+        document.getElementById('regPasswordErr').classList.remove('show');
+      }
+
+      if (pwd !== confPwd) {
+        document.getElementById('regConfirmPasswordErr').classList.add('show');
+        valid = false;
+      } else {
+        document.getElementById('regConfirmPasswordErr').classList.remove('show');
+      }
+
+      if (!valid) return;
+
+      const submitBtn = document.getElementById('submitRegBtn');
+      submitBtn.disabled = true;
+      submitBtn.innerHTML = '<span class="spinner"></span> Creating account...';
+
+      try {
+        const res = await API.register({
+          name,
+          email,
+          department: dept,
+          program: `B.Tech ${dept}`,
+          password: pwd,
+          confirm_password: confPwd
+        });
+        appState.user = res.student;
+        updateAuthUI();
+        showToast(res.message || 'Registration successful! Welcome to Greenfield.', 'success');
+        setPage('dashboard');
+      } catch (err) {
+        showToast(err.message, 'error');
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = 'Complete Registration';
+      }
+    });
+  } else if (appState.authMode === 'forgot') {
+    const form = document.getElementById('forgotForm');
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const email = document.getElementById('forgotEmail').value.trim();
+      if (!email) {
+        document.getElementById('forgotEmailErr').classList.add('show');
+        return;
+      }
+      document.getElementById('forgotEmailErr').classList.remove('show');
+
+      const submitBtn = document.getElementById('submitForgotBtn');
+      submitBtn.disabled = true;
+      submitBtn.innerHTML = '<span class="spinner"></span> Generating link...';
+
+      try {
+        const res = await API.forgotPassword(email);
+        appState.resetToken = res.reset_token;
+        showToast('Password reset link generated.', 'success');
+
+        const resultBox = document.getElementById('forgotResultBox');
+        resultBox.classList.remove('hidden');
+        document.getElementById('proceedResetBtn').onclick = () => {
+          setPage('auth', 'reset');
+        };
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = 'Link Generated';
+      } catch (err) {
+        showToast(err.message, 'error');
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = 'Generate Reset Link';
+      }
+    });
+  } else if (appState.authMode === 'reset') {
+    const form = document.getElementById('resetForm');
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const token = document.getElementById('resetTokenInput').value.trim();
+      const pwd = document.getElementById('resetNewPassword').value;
+      const confPwd = document.getElementById('resetConfirmPassword').value;
+
+      let valid = true;
+      if (!token) {
+        document.getElementById('resetTokenErr').classList.add('show');
+        valid = false;
+      } else {
+        document.getElementById('resetTokenErr').classList.remove('show');
+      }
+
+      if (!pwd || pwd.length < 6) {
+        document.getElementById('resetNewPasswordErr').classList.add('show');
+        valid = false;
+      } else {
+        document.getElementById('resetNewPasswordErr').classList.remove('show');
+      }
+
+      if (pwd !== confPwd) {
+        document.getElementById('resetConfirmPasswordErr').classList.add('show');
+        valid = false;
+      } else {
+        document.getElementById('resetConfirmPasswordErr').classList.remove('show');
+      }
+
+      if (!valid) return;
+
+      const submitBtn = document.getElementById('submitResetBtn');
+      submitBtn.disabled = true;
+      submitBtn.innerHTML = '<span class="spinner"></span> Updating password...';
+
+      try {
+        const res = await API.resetPassword(token, pwd, confPwd);
+        showToast(res.message || 'Password reset successfully. Please sign in.', 'success');
+        setPage('auth', 'login');
+      } catch (err) {
+        showToast(err.message, 'error');
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = 'Save New Password';
+      }
+    });
+  }
+}
+
+// ===================================================================
+// 5. ENROLMENT & WITHDRAWAL LOGIC
+// ===================================================================
+async function handleEnrolAction(courseId) {
+  if (!appState.user) {
+    showToast('Please sign in or register to enrol in courses.', 'info');
+    setPage('auth', 'login');
+    return;
+  }
+
+  // Find button to show loading
+  const card = document.getElementById(`course-card-${courseId}`);
+  const btn = card ? card.querySelector('.btn-primary, .btn-accent') : null;
+  const originalText = btn ? btn.innerHTML : '';
+  if (btn) {
+    btn.disabled = true;
+    btn.innerHTML = '<span class="spinner"></span> Processing...';
+  }
+
+  try {
+    const res = await API.enrollCourse(courseId);
+    showToast(res.message, res.status === 'Waitlisted' ? 'warning' : 'success');
+
+    // Refresh course listings and nav badge
+    if (appState.currentPage === 'catalogue') {
+      await loadAndRenderCourses();
+    } else if (appState.currentPage === 'dashboard') {
+      await renderDashboardView(document.getElementById('mainContainer'));
+    }
+
+    // Refresh user dashboard data in background to update count badges
+    API.getDashboard().then(dash => {
+      appState.dashboardData = dash;
+      const enrolledCount = dash.stats.enrolled_courses;
+      const b = document.getElementById('navEnrolledCount');
+      if (b) {
+        b.textContent = enrolledCount;
+        b.classList.toggle('hidden', enrolledCount === 0);
+      }
+      const mb = document.getElementById('mobileNavBadge');
+      if (mb) mb.textContent = enrolledCount;
+    }).catch(() => {});
+
+  } catch (err) {
+    showToast(err.message, 'error');
+    if (btn) {
+      btn.disabled = false;
+      btn.innerHTML = originalText;
+    }
+  }
+}
+
+function promptWithdraw(courseId, courseCode) {
+  appState.pendingWithdrawCourseId = courseId;
+  document.getElementById('withdrawCourseName').textContent = courseCode;
+  document.getElementById('withdrawModalOverlay').classList.add('open');
+}
+
+async function executeWithdrawal() {
+  if (!appState.pendingWithdrawCourseId) return;
+  const courseId = appState.pendingWithdrawCourseId;
+
+  const btn = document.getElementById('confirmWithdrawBtn');
+  btn.disabled = true;
+  btn.innerHTML = '<span class="spinner"></span> Withdrawing...';
+
+  try {
+    const res = await API.withdrawCourse(courseId);
+    document.getElementById('withdrawModalOverlay').classList.remove('open');
+    showToast(res.message, 'info');
+
+    // Refresh current view
+    if (appState.currentPage === 'catalogue') {
+      await loadAndRenderCourses();
+    } else if (appState.currentPage === 'dashboard') {
+      await renderDashboardView(document.getElementById('mainContainer'));
+    } else if (appState.currentPage === 'schedule') {
+      await renderScheduleView(document.getElementById('mainContainer'));
+    }
+
+    // Update nav counter
+    API.getDashboard().then(dash => {
+      appState.dashboardData = dash;
+      const enrolledCount = dash.stats.enrolled_courses;
+      const b = document.getElementById('navEnrolledCount');
+      if (b) {
+        b.textContent = enrolledCount;
+        b.classList.toggle('hidden', enrolledCount === 0);
+      }
+      const mb = document.getElementById('mobileNavBadge');
+      if (mb) mb.textContent = enrolledCount;
+    }).catch(() => {});
+
+  } catch (err) {
+    showToast(err.message, 'error');
+  } finally {
+    btn.disabled = false;
+    btn.innerHTML = 'Yes, Withdraw Course';
+    appState.pendingWithdrawCourseId = null;
+  }
+}
+
+// ===================================================================
+// 6. COURSE DETAIL MODAL
+// ===================================================================
+async function openCourseDetail(courseId) {
+  const modal = document.getElementById('detailModalOverlay');
+  const body = document.getElementById('detailModalBody');
+  const actionContainer = document.getElementById('modalActionContainer');
+
+  body.innerHTML = `
+    <div class="empty-state" style="padding:2rem;">
+      <div class="spinner" style="width:24px; height:24px; border-width:2px; border-top-color:var(--primary); margin:0 auto 0.5rem;"></div>
+      <div>Loading course details...</div>
+    </div>
+  `;
+  actionContainer.innerHTML = '';
+  modal.classList.add('open');
+
+  try {
+    const course = await API.getCourseDetail(courseId);
+
+    document.getElementById('modalCourseCode').textContent = course.code;
+    document.getElementById('modalCourseTitle').textContent = course.title;
+
+    const isEnrolled = course.my_status === 'Enrolled';
+    const isWaitlisted = course.my_status === 'Waitlisted';
+
+    let statusPill = '';
+    if (isEnrolled) statusPill = '<span class="badge badge-enrolled">✓ Enrolled</span>';
+    else if (isWaitlisted) statusPill = `<span class="badge badge-waitlist">⏳ On Waitlist (Pos #${course.my_waitlist_position})</span>`;
+    else if (course.computed_status === 'Open') statusPill = `<span class="badge badge-open">🟢 ${course.seats_remaining} seats open</span>`;
+    else if (course.computed_status === 'Waitlist Open') statusPill = `<span class="badge badge-waitlist">🟣 Waitlist Open (${course.waitlist_spots_remaining} spots)</span>`;
+    else if (course.computed_status === 'Closed') statusPill = '<span class="badge badge-closed">Closed</span>';
+    else statusPill = '<span class="badge badge-full">🔴 Full</span>';
+
+    body.innerHTML = `
+      <div class="flex items-center justify-between mb-3">
+        <span class="course-dept-tag" style="font-size:0.85rem;">Department: ${escapeHtml(course.department)}</span>
+        ${statusPill}
+      </div>
+
+      <p style="font-size:0.925rem; color:var(--text); line-height:1.6; margin-bottom:1.25rem;">
+        ${escapeHtml(course.description)}
+      </p>
+
+      <div class="detail-grid">
+        <div class="detail-item-box">
+          <div class="detail-item-title">Instructor</div>
+          <div class="detail-item-val">${escapeHtml(course.instructor)}</div>
+        </div>
+        <div class="detail-item-box">
+          <div class="detail-item-title">Schedule</div>
+          <div class="detail-item-val">${escapeHtml(course.schedule)}</div>
+        </div>
+        <div class="detail-item-box">
+          <div class="detail-item-title">Venue / Room</div>
+          <div class="detail-item-val">${escapeHtml(course.room)}</div>
+        </div>
+        <div class="detail-item-box">
+          <div class="detail-item-title">Credit Hours</div>
+          <div class="detail-item-val">${course.credits} Credits</div>
+        </div>
+      </div>
+
+      <div class="detail-item-box" style="margin-bottom:1.25rem;">
+        <div class="detail-item-title">Prerequisites</div>
+        <div class="detail-item-val" style="font-weight:500;">${escapeHtml(course.prerequisites || 'None')}</div>
+      </div>
+
+      <div class="seat-capacity-meter" style="margin:0;">
+        <div class="meter-label">
+          <span>Enrolment Seats Breakdown</span>
+          <span>${course.enrolled_count} / ${course.capacity} (${course.seats_remaining} left)</span>
+        </div>
+        <div class="meter-bar" style="height:8px;">
+          <div class="meter-fill fill-green" style="width: ${Math.min(100, (course.enrolled_count / course.capacity) * 100)}%;"></div>
+        </div>
+        <div class="text-xs text-muted mt-2">
+          Waitlist Capacity: ${course.waitlist_count || 0} / ${course.waitlist_capacity} positions filled
+        </div>
+      </div>
+    `;
+
+    // Modal action button
+    if (isEnrolled) {
+      actionContainer.innerHTML = `
+        <button class="btn btn-danger" onclick="closeDetailModal(); promptWithdraw(${course.id}, '${escapeHtml(course.code)}')">
+          Withdraw from Course
+        </button>
+      `;
+    } else if (isWaitlisted) {
+      actionContainer.innerHTML = `
+        <button class="btn btn-outline" onclick="closeDetailModal(); promptWithdraw(${course.id}, '${escapeHtml(course.code)}')">
+          Leave Waitlist
+        </button>
+      `;
+    } else if (course.computed_status === 'Open') {
+      actionContainer.innerHTML = `
+        <button class="btn btn-primary" onclick="closeDetailModal(); handleEnrolAction(${course.id})">
+          Enrol in Course
+        </button>
+      `;
+    } else if (course.computed_status === 'Waitlist Open') {
+      actionContainer.innerHTML = `
+        <button class="btn btn-accent" onclick="closeDetailModal(); handleEnrolAction(${course.id})">
+          Join Waitlist
+        </button>
+      `;
+    } else {
+      actionContainer.innerHTML = `
+        <button class="btn btn-outline" disabled>Unavailable for Registration</button>
+      `;
+    }
+  } catch (err) {
+    body.innerHTML = `<div class="empty-state"><div class="empty-title">Error loading details: ${escapeHtml(err.message)}</div></div>`;
+  }
+}
+
+function closeDetailModal() {
+  document.getElementById('detailModalOverlay').classList.remove('open');
+}
+
+// ===================================================================
+// 6. ADMINISTRATOR DASHBOARD VIEW & CAPABILITIES
+// ===================================================================
+
+let adminState = {
+  tab: 'courses', // 'courses' | 'students' | 'enrollments' | 'analytics'
+  stats: null,
+  courses: [],
+  students: [],
+  enrollments: [],
+  filters: {
+    courseSearch: '',
+    courseDept: 'All',
+    courseStatus: 'All',
+    studentSearch: '',
+    enrollmentStatus: 'All'
+  },
+  editingCourseId: null
+};
+
+async function renderAdminDashboardView(container) {
+  // Check if authenticated user is admin
+  const isAdmin = appState.user && (appState.user.is_admin || appState.user.role === 'Administrator');
+
+  if (!isAdmin) {
+    container.innerHTML = `
+      <div class="auth-page" style="max-width:540px;">
+        <div class="auth-header" style="background:linear-gradient(135deg, #0F172A 0%, #1E293B 40%, #1E40AF 100%);">
+          <div style="font-size:2.4rem; margin-bottom:0.35rem;">🛡️</div>
+          <h2 style="font-size:1.4rem; font-weight:700;">Academic Administration Portal</h2>
+          <p style="font-size:0.875rem; opacity:0.85;">Authorized administrative access to course configurations & waitlists</p>
+        </div>
+        <div class="auth-body">
+          <div style="background:#EFF6FF; border:1px solid #BFDBFE; border-radius:var(--radius-sm); padding:1rem; margin-bottom:1.25rem;">
+            <div style="font-weight:700; color:#1E40AF; font-size:0.9rem; margin-bottom:0.25rem;">⚡ Instant One-Click Demo Access</div>
+            <p style="font-size:0.825rem; color:#1E3A8A; margin-bottom:0.75rem;">Sign in instantly with the seeded administrator account (<code>admin@greenfield.edu</code> / <code>admin123</code>) to inspect and manage all academic records.</p>
+            <button class="btn btn-primary btn-block" id="adminQuickLoginBtn">Sign In as Demo Administrator</button>
+          </div>
+
+          <form id="adminGatewayForm" novalidate>
+            <div class="form-group">
+              <label class="form-label" for="adminEmailInput">Admin Email or Username <span class="req">*</span></label>
+              <input type="text" id="adminEmailInput" class="form-input" placeholder="admin@greenfield.edu or admin" value="admin@greenfield.edu" required>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="adminPasswordInput">Password <span class="req">*</span></label>
+              <input type="password" id="adminPasswordInput" class="form-input" placeholder="Enter admin password" value="admin123" required>
+            </div>
+            <button type="submit" class="btn btn-outline btn-block mt-3" id="adminFormSubmitBtn">
+              Sign In with Credentials
+            </button>
+          </form>
+        </div>
+      </div>
+    `;
+
+    document.getElementById('adminQuickLoginBtn').addEventListener('click', async () => {
+      await handleAdminLogin('admin@greenfield.edu', 'admin123');
+    });
+
+    document.getElementById('adminGatewayForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const email = document.getElementById('adminEmailInput').value.trim();
+      const pwd = document.getElementById('adminPasswordInput').value;
+      if (!email || !pwd) {
+        showToast('Please enter both email/username and password.', 'error');
+        return;
+      }
+      await handleAdminLogin(email, pwd);
+    });
+    return;
+  }
+
+  // Loading state
+  container.innerHTML = `
+    <div class="empty-state">
+      <span class="spinner" style="border-top-color:var(--primary);width:32px;height:32px;margin-bottom:1rem;"></span>
+      <div class="empty-title">Loading Administrative Dashboard...</div>
+      <div class="empty-desc">Fetching live enrollments, student records, and course metrics.</div>
+    </div>
+  `;
+
+  try {
+    const [stats, courses, students, enrollments] = await Promise.all([
+      API.getAdminStats(),
+      API.getCourses(),
+      API.getAdminStudents(),
+      API.getAdminEnrollments()
+    ]);
+
+    adminState.stats = stats;
+    adminState.courses = courses;
+    adminState.students = students;
+    adminState.enrollments = enrollments;
+
+    renderAdminDashboardContent(container);
+  } catch (err) {
+    container.innerHTML = `
+      <div class="empty-state">
+        <div class="empty-icon">⚠️</div>
+        <div class="empty-title">Failed to load admin data</div>
+        <div class="empty-desc">${escapeHtml(err.message)}</div>
+        <button class="btn btn-primary" onclick="renderAdminDashboardView(document.getElementById('mainContainer'))">Retry</button>
+      </div>
+    `;
+  }
+}
+
+async function handleAdminLogin(email, password) {
+  try {
+    const res = await API.login(email, password);
+    if (res.role === 'admin' || res.admin) {
+      appState.user = { ...res.admin, is_admin: true };
+    } else {
+      appState.user = res.student;
+    }
+    updateAuthUI();
+    showToast(res.message || 'Signed in as Administrator!', 'success');
+    renderCurrentView();
+  } catch (err) {
+    showToast(err.message, 'error');
+  }
+}
+
+function renderAdminDashboardContent(container) {
+  const s = adminState.stats;
+
+  container.innerHTML = `
+    <div class="page-hero admin-hero">
+      <div class="flex items-center justify-between flex-wrap gap-3">
+        <div>
+          <div class="hero-tag">🛡️ REGISTRAR & ACADEMIC ADMINISTRATION · FALL 2026</div>
+          <h1 class="hero-title">Academic Administration Portal</h1>
+          <p class="hero-desc">Manage course offerings, configure live capacity limits, oversee registration queues, and review student progress.</p>
+        </div>
+        <div class="flex items-center gap-2">
+          <button class="btn btn-outline" style="background:rgba(255,255,255,0.15); color:white; border-color:rgba(255,255,255,0.3);" onclick="openAddCourseModal()">
+            ➕ Add New Course
+          </button>
+          <button class="btn btn-outline" style="background:rgba(255,255,255,0.1); color:white; border-color:rgba(255,255,255,0.25);" onclick="renderAdminDashboardView(document.getElementById('mainContainer'))">
+            🔄 Refresh
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Quick Stats Strip -->
+    <div class="stats-strip">
+      <div class="stat-box">
+        <div class="stat-box-content">
+          <span class="stat-box-num">${s.student_count}</span>
+          <span class="stat-box-label">Registered Students</span>
+        </div>
+        <div class="stat-box-icon blue">👥</div>
+      </div>
+
+      <div class="stat-box">
+        <div class="stat-box-content">
+          <span class="stat-box-num">${s.course_count}</span>
+          <span class="stat-box-label">Courses in Catalog</span>
+        </div>
+        <div class="stat-box-icon purple">📚</div>
+      </div>
+
+      <div class="stat-box">
+        <div class="stat-box-content">
+          <span class="stat-box-num">${s.enrolled_count} / ${s.total_capacity}</span>
+          <span class="stat-box-label">Enrolled Seats (${s.utilization}%)</span>
+          <div class="utilization-track">
+            <div class="utilization-fill" style="width:${Math.min(100, s.utilization)}%; background: ${s.utilization > 85 ? '#EF4444' : s.utilization > 60 ? '#10B981' : '#3B82F6'};"></div>
+          </div>
+        </div>
+        <div class="stat-box-icon green">✍️</div>
+      </div>
+
+      <div class="stat-box">
+        <div class="stat-box-content">
+          <span class="stat-box-num">${s.waitlist_count}</span>
+          <span class="stat-box-label">Waitlisted Requests</span>
+        </div>
+        <div class="stat-box-icon amber">⏳</div>
+      </div>
+
+      <div class="stat-box">
+        <div class="stat-box-content">
+          <span class="stat-box-num">${s.dept_count}</span>
+          <span class="stat-box-label">Academic Departments</span>
+        </div>
+        <div class="stat-box-icon blue">🏛️</div>
+      </div>
+    </div>
+
+    <!-- Admin Tabs Bar -->
+    <div class="admin-tabs-bar" role="tablist">
+      <button class="admin-tab-btn ${adminState.tab === 'courses' ? 'active' : ''}" onclick="switchAdminTab('courses')">
+        <span>📚 Course Catalog</span>
+        <span class="admin-badge-count">${adminState.courses.length}</span>
+      </button>
+      <button class="admin-tab-btn ${adminState.tab === 'students' ? 'active' : ''}" onclick="switchAdminTab('students')">
+        <span>👥 Student Directory</span>
+        <span class="admin-badge-count">${adminState.students.length}</span>
+      </button>
+      <button class="admin-tab-btn ${adminState.tab === 'enrollments' ? 'active' : ''}" onclick="switchAdminTab('enrollments')">
+        <span>📋 Live Registrations & Audit</span>
+        <span class="admin-badge-count">${adminState.enrollments.length}</span>
+      </button>
+      <button class="admin-tab-btn ${adminState.tab === 'analytics' ? 'active' : ''}" onclick="switchAdminTab('analytics')">
+        <span>📊 Department Utilization</span>
+      </button>
+    </div>
+
+    <div id="adminTabContent"></div>
+  `;
+
+  renderActiveAdminTab();
+}
+
+function switchAdminTab(tab) {
+  adminState.tab = tab;
+  renderAdminDashboardContent(document.getElementById('mainContainer'));
+}
+
+function renderActiveAdminTab() {
+  const content = document.getElementById('adminTabContent');
+  if (!content) return;
+
+  if (adminState.tab === 'courses') {
+    renderAdminCoursesTab(content);
+  } else if (adminState.tab === 'students') {
+    renderAdminStudentsTab(content);
+  } else if (adminState.tab === 'enrollments') {
+    renderAdminEnrollmentsTab(content);
+  } else if (adminState.tab === 'analytics') {
+    renderAdminAnalyticsTab(content);
+  }
+}
+
+function renderAdminCoursesTab(content) {
+  let filtered = adminState.courses;
+
+  if (adminState.filters.courseSearch) {
+    const q = adminState.filters.courseSearch.toLowerCase();
+    filtered = filtered.filter(c => 
+      c.code.toLowerCase().includes(q) ||
+      c.title.toLowerCase().includes(q) ||
+      c.instructor.toLowerCase().includes(q) ||
+      c.room.toLowerCase().includes(q)
+    );
+  }
+  if (adminState.filters.courseDept && adminState.filters.courseDept !== 'All') {
+    filtered = filtered.filter(c => c.department === adminState.filters.courseDept);
+  }
+  if (adminState.filters.courseStatus && adminState.filters.courseStatus !== 'All') {
+    filtered = filtered.filter(c => c.computed_status === adminState.filters.courseStatus);
+  }
+
+  content.innerHTML = `
+    <div class="admin-table-card">
+      <div class="flex items-center justify-between flex-wrap gap-3 mb-4">
+        <div class="flex items-center gap-2 flex-wrap flex-1">
+          <input type="text" id="adminCourseSearchInput" class="form-input" style="max-width:280px;" placeholder="Search code, title, instructor..." value="${escapeHtml(adminState.filters.courseSearch)}">
+          <select id="adminCourseDeptFilter" class="filter-select" style="min-width:180px;">
+            <option value="All" ${adminState.filters.courseDept === 'All' ? 'selected' : ''}>All Departments</option>
+            <option value="Computer Science" ${adminState.filters.courseDept === 'Computer Science' ? 'selected' : ''}>Computer Science</option>
+            <option value="Mathematics" ${adminState.filters.courseDept === 'Mathematics' ? 'selected' : ''}>Mathematics</option>
+            <option value="Mechanical Engineering" ${adminState.filters.courseDept === 'Mechanical Engineering' ? 'selected' : ''}>Mechanical Engineering</option>
+            <option value="Biology" ${adminState.filters.courseDept === 'Biology' ? 'selected' : ''}>Biology</option>
+            <option value="Business Administration" ${adminState.filters.courseDept === 'Business Administration' ? 'selected' : ''}>Business Administration</option>
+            <option value="Psychology" ${adminState.filters.courseDept === 'Psychology' ? 'selected' : ''}>Psychology</option>
+            <option value="Humanities" ${adminState.filters.courseDept === 'Humanities' ? 'selected' : ''}>Humanities</option>
+          </select>
+          <select id="adminCourseStatusFilter" class="filter-select" style="min-width:150px;">
+            <option value="All" ${adminState.filters.courseStatus === 'All' ? 'selected' : ''}>All Statuses</option>
+            <option value="Open" ${adminState.filters.courseStatus === 'Open' ? 'selected' : ''}>Open</option>
+            <option value="Waitlist Open" ${adminState.filters.courseStatus === 'Waitlist Open' ? 'selected' : ''}>Waitlist Open</option>
+            <option value="Full" ${adminState.filters.courseStatus === 'Full' ? 'selected' : ''}>Full</option>
+            <option value="Closed" ${adminState.filters.courseStatus === 'Closed' ? 'selected' : ''}>Closed</option>
+          </select>
+        </div>
+        <button class="btn btn-primary btn-sm" onclick="openAddCourseModal()">
+          ➕ Add Course
+        </button>
+      </div>
+
+      <div style="font-size:0.85rem; color:var(--text-muted); margin-bottom:1rem;">
+        Showing <strong>${filtered.length}</strong> of ${adminState.courses.length} courses
+      </div>
+
+      ${filtered.length === 0 ? `
+        <div class="empty-state" style="padding:2rem;">
+          <div class="empty-title">No matching courses found</div>
+          <div class="empty-desc">Try clearing or adjusting search filters.</div>
+        </div>
+      ` : `
+        <table class="table">
+          <thead>
+            <tr>
+              <th>Course</th>
+              <th>Department / Instructor</th>
+              <th>Schedule & Room</th>
+              <th>Live Capacity Load</th>
+              <th>Status</th>
+              <th style="text-align:right;">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${filtered.map(c => {
+              let pillClass = 'open';
+              if (c.computed_status === 'Closed') pillClass = 'closed';
+              else if (c.computed_status === 'Full') pillClass = 'full';
+              else if (c.computed_status === 'Waitlist Open') pillClass = 'waitlist';
+
+              const pct = Math.min(100, Math.round((c.enrolled_count / c.capacity) * 100));
+
+              return `
+                <tr>
+                  <td>
+                    <div class="flex items-center gap-2">
+                      <span class="course-code">${escapeHtml(c.code)}</span>
+                      <strong style="cursor:pointer;" onclick="openCourseDetail(${c.id})">${escapeHtml(c.title)}</strong>
+                    </div>
+                    <div class="text-xs text-muted mt-1">${c.credits} Credits · Term: ${escapeHtml(c.term)}</div>
+                  </td>
+                  <td>
+                    <div>${escapeHtml(c.department)}</div>
+                    <div class="text-xs text-muted">${escapeHtml(c.instructor)}</div>
+                  </td>
+                  <td>
+                    <div>${escapeHtml(c.schedule)}</div>
+                    <div class="text-xs text-muted">Room: ${escapeHtml(c.room)}</div>
+                  </td>
+                  <td style="min-width:160px;">
+                    <div class="flex items-center justify-between text-xs mb-1">
+                      <span><strong>${c.enrolled_count}</strong> / ${c.capacity} enrolled</span>
+                      <span class="text-muted">${pct}%</span>
+                    </div>
+                    <div class="utilization-track">
+                      <div class="utilization-fill" style="width:${pct}%; background: ${pct >= 100 ? '#DC2626' : pct > 75 ? '#F59E0B' : '#10B981'};"></div>
+                    </div>
+                    <div class="text-xs text-muted mt-1">Waitlist: ${c.waitlist_count} / ${c.waitlist_capacity}</div>
+                  </td>
+                  <td>
+                    <span class="pill-badge ${pillClass}">${c.computed_status}</span>
+                  </td>
+                  <td>
+                    <div class="flex items-center justify-end gap-1">
+                      <button class="btn btn-outline btn-sm" style="padding:0.3rem 0.6rem; font-size:0.75rem;" title="${c.is_closed ? 'Reopen registration' : 'Close registration'}" onclick="toggleCourseStatus(${c.id})">
+                        ${c.is_closed ? '🔓 Open' : '🔒 Close'}
+                      </button>
+                      <button class="btn btn-outline btn-sm" style="padding:0.3rem 0.6rem; font-size:0.75rem;" title="Edit course parameters" onclick="openEditCourseModal(${c.id})">
+                        ✏️ Edit
+                      </button>
+                      <button class="btn btn-danger btn-sm" style="padding:0.3rem 0.6rem; font-size:0.75rem;" title="Delete course" onclick="deleteCoursePrompt(${c.id}, '${escapeHtml(c.code)}', '${escapeHtml(c.title)}')">
+                        🗑️
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              `;
+            }).join('')}
+          </tbody>
+        </table>
+      `}
+    </div>
+  `;
+
+  // Attach search/filter events
+  const sInput = document.getElementById('adminCourseSearchInput');
+  const dFilter = document.getElementById('adminCourseDeptFilter');
+  const stFilter = document.getElementById('adminCourseStatusFilter');
+
+  if (sInput) {
+    sInput.addEventListener('input', (e) => {
+      adminState.filters.courseSearch = e.target.value;
+      renderAdminCoursesTab(document.getElementById('adminTabContent'));
+    });
+  }
+  if (dFilter) {
+    dFilter.addEventListener('change', (e) => {
+      adminState.filters.courseDept = e.target.value;
+      renderAdminCoursesTab(document.getElementById('adminTabContent'));
+    });
+  }
+  if (stFilter) {
+    stFilter.addEventListener('change', (e) => {
+      adminState.filters.courseStatus = e.target.value;
+      renderAdminCoursesTab(document.getElementById('adminTabContent'));
+    });
+  }
+}
+
+function renderAdminStudentsTab(content) {
+  let filtered = adminState.students;
+
+  if (adminState.filters.studentSearch) {
+    const q = adminState.filters.studentSearch.toLowerCase();
+    filtered = filtered.filter(s =>
+      s.name.toLowerCase().includes(q) ||
+      s.student_id.toLowerCase().includes(q) ||
+      s.email.toLowerCase().includes(q) ||
+      s.department.toLowerCase().includes(q) ||
+      s.program.toLowerCase().includes(q)
+    );
+  }
+
+  content.innerHTML = `
+    <div class="admin-table-card">
+      <div class="flex items-center justify-between flex-wrap gap-3 mb-4">
+        <input type="text" id="adminStudentSearchInput" class="form-input" style="max-width:320px;" placeholder="Search student name, ID, email..." value="${escapeHtml(adminState.filters.studentSearch)}">
+        <div style="font-size:0.85rem; color:var(--text-muted);">
+          Total Registered: <strong>${adminState.students.length}</strong> students
+        </div>
+      </div>
+
+      <table class="table">
+        <thead>
+          <tr>
+            <th>Student</th>
+            <th>Program & Department</th>
+            <th>Semester</th>
+            <th>Active Registrations</th>
+            <th>Waitlisted</th>
+            <th style="text-align:right;">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${filtered.map(s => `
+            <tr>
+              <td>
+                <div class="flex items-center gap-2">
+                  <div class="user-avatar" style="width:30px;height:30px;font-size:0.75rem;">
+                    ${s.name.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase()}
+                  </div>
+                  <div>
+                    <strong>${escapeHtml(s.name)}</strong>
+                    <div class="text-xs text-muted">${escapeHtml(s.student_id)} · ${escapeHtml(s.email)}</div>
+                  </div>
+                </div>
+              </td>
+              <td>
+                <div>${escapeHtml(s.program)}</div>
+                <div class="text-xs text-muted">${escapeHtml(s.department)}</div>
+              </td>
+              <td>Semester ${s.semester}</td>
+              <td>
+                <span class="badge badge-enrolled">${s.enrolled_count} courses (${s.total_credits} cr)</span>
+              </td>
+              <td>
+                <span class="badge badge-waitlist">${s.waitlist_count} waiting</span>
+              </td>
+              <td>
+                <div class="flex items-center justify-end">
+                  <button class="btn btn-outline btn-sm" onclick="inspectStudent(${s.id})">
+                    🔍 View Enrolments
+                  </button>
+                </div>
+              </td>
+            </tr>
+          `).join('')}
+        </tbody>
+      </table>
+    </div>
+  `;
+
+  const sInput = document.getElementById('adminStudentSearchInput');
+  if (sInput) {
+    sInput.addEventListener('input', (e) => {
+      adminState.filters.studentSearch = e.target.value;
+      renderAdminStudentsTab(document.getElementById('adminTabContent'));
+    });
+  }
+}
+
+function renderAdminEnrollmentsTab(content) {
+  let filtered = adminState.enrollments;
+
+  if (adminState.filters.enrollmentStatus && adminState.filters.enrollmentStatus !== 'All') {
+    filtered = filtered.filter(e => e.status === adminState.filters.enrollmentStatus);
+  }
+
+  content.innerHTML = `
+    <div class="admin-table-card">
+      <div class="flex items-center justify-between flex-wrap gap-3 mb-4">
+        <div class="flex items-center gap-2">
+          <label class="form-label mb-0" style="font-size:0.85rem;">Filter Status:</label>
+          <select id="adminEnrollmentStatusFilter" class="filter-select" style="min-width:160px;">
+            <option value="All" ${adminState.filters.enrollmentStatus === 'All' ? 'selected' : ''}>All Statuses</option>
+            <option value="Enrolled" ${adminState.filters.enrollmentStatus === 'Enrolled' ? 'selected' : ''}>Enrolled</option>
+            <option value="Waitlisted" ${adminState.filters.enrollmentStatus === 'Waitlisted' ? 'selected' : ''}>Waitlisted</option>
+            <option value="Withdrawn" ${adminState.filters.enrollmentStatus === 'Withdrawn' ? 'selected' : ''}>Withdrawn</option>
+          </select>
+        </div>
+        <div style="font-size:0.85rem; color:var(--text-muted);">
+          Total Records: <strong>${filtered.length}</strong>
+        </div>
+      </div>
+
+      <table class="table">
+        <thead>
+          <tr>
+            <th>Ref #</th>
+            <th>Student</th>
+            <th>Course</th>
+            <th>Registration Status</th>
+            <th>Timestamp</th>
+            <th style="text-align:right;">Administrative Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${filtered.map(e => {
+            let statusBadge = '<span class="badge badge-enrolled">✓ Enrolled</span>';
+            if (e.status === 'Waitlisted') {
+              statusBadge = `<span class="badge badge-waitlist">⏳ Waitlist Position #${e.waitlist_position}</span>`;
+            } else if (e.status === 'Withdrawn') {
+              statusBadge = '<span class="badge badge-withdrawn">Withdrawn</span>';
+            }
+
+            const canDrop = e.status === 'Enrolled' || e.status === 'Waitlisted';
+
+            return `
+              <tr>
+                <td style="font-family:monospace; font-size:0.8rem; color:var(--text-muted);">#ENR-${e.enrollment_id}</td>
+                <td>
+                  <strong>${escapeHtml(e.student_name)}</strong>
+                  <div class="text-xs text-muted">${escapeHtml(e.student_id)} · ${escapeHtml(e.student_department)}</div>
+                </td>
+                <td>
+                  <div class="flex items-center gap-2">
+                    <span class="course-code">${escapeHtml(e.course_code)}</span>
+                    <strong>${escapeHtml(e.course_title)}</strong>
+                  </div>
+                  <div class="text-xs text-muted">${e.credits} credits · Room: ${escapeHtml(e.room)}</div>
+                </td>
+                <td>${statusBadge}</td>
+                <td style="font-size:0.8rem; color:var(--text-muted);">${escapeHtml(e.enrolled_at || 'Recently')}</td>
+                <td>
+                  <div class="flex items-center justify-end">
+                    ${canDrop ? `
+                      <button class="btn btn-danger btn-sm" onclick="adminDropEnrollmentAction(${e.enrollment_id}, '${escapeHtml(e.student_name)}', '${escapeHtml(e.course_code)}')">
+                        Drop Registration
+                      </button>
+                    ` : `
+                      <span class="text-xs text-muted">No Action Needed</span>
+                    `}
+                  </div>
+                </td>
+              </tr>
+            `;
+          }).join('')}
+        </tbody>
+      </table>
+    </div>
+  `;
+
+  const fSelect = document.getElementById('adminEnrollmentStatusFilter');
+  if (fSelect) {
+    fSelect.addEventListener('change', (e) => {
+      adminState.filters.enrollmentStatus = e.target.value;
+      renderAdminEnrollmentsTab(document.getElementById('adminTabContent'));
+    });
+  }
+}
+
+function renderAdminAnalyticsTab(content) {
+  // Aggregate by department
+  const depts = {};
+  adminState.courses.forEach(c => {
+    if (!depts[c.department]) {
+      depts[c.department] = { name: c.department, courses: 0, capacity: 0, enrolled: 0, waitlisted: 0 };
+    }
+    depts[c.department].courses += 1;
+    depts[c.department].capacity += c.capacity;
+    depts[c.department].enrolled += c.enrolled_count;
+    depts[c.department].waitlisted += c.waitlist_count;
+  });
+
+  const list = Object.values(depts);
+
+  content.innerHTML = `
+    <div class="grid" style="grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap:1.25rem;">
+      ${list.map(d => {
+        const pct = d.capacity > 0 ? Math.round((d.enrolled / d.capacity) * 100) : 0;
+        return `
+          <div style="background:white; border:1px solid var(--border); border-radius:var(--radius); padding:1.25rem; box-shadow:var(--shadow-sm);">
+            <div class="flex items-center justify-between mb-2">
+              <strong style="font-size:1.05rem;">🏛️ ${escapeHtml(d.name)}</strong>
+              <span class="pill-badge ${pct > 80 ? 'full' : 'open'}">${pct}% Filled</span>
+            </div>
+            <div class="flex items-center justify-between text-xs text-muted mb-1">
+              <span>${d.courses} Courses Offered</span>
+              <span><strong>${d.enrolled}</strong> / ${d.capacity} Seats</span>
+            </div>
+            <div class="utilization-track" style="height:10px;">
+              <div class="utilization-fill" style="width:${Math.min(100, pct)}%; background:${pct >= 90 ? '#EF4444' : pct > 65 ? '#10B981' : '#3B82F6'};"></div>
+            </div>
+            <div class="flex items-center justify-between text-xs text-muted mt-2 pt-2" style="border-top:1px solid var(--border);">
+              <span>Active Waitlist: <strong>${d.waitlisted}</strong></span>
+              <span>Available Seats: <strong>${Math.max(0, d.capacity - d.enrolled)}</strong></span>
+            </div>
+          </div>
+        `;
+      }).join('')}
+    </div>
+  `;
+}
+
+function openAddCourseModal() {
+  adminState.editingCourseId = null;
+  document.getElementById('adminCourseForm').reset();
+  document.getElementById('adminCourseId').value = '';
+  document.getElementById('adminCourseModalBadge').textContent = 'NEW';
+  document.getElementById('adminCourseModalTitle').textContent = 'Add New Course';
+  document.getElementById('acCredits').value = 3;
+  document.getElementById('acCapacity').value = 30;
+  document.getElementById('acWaitlistCap').value = 10;
+  document.getElementById('acDays').value = 'MWF';
+  document.getElementById('acTimeSlot').value = '10:00 - 11:15';
+  document.getElementById('acIsClosed').checked = false;
+  document.getElementById('adminCourseModalOverlay').classList.add('open');
+}
+
+function openEditCourseModal(courseId) {
+  const c = adminState.courses.find(item => item.id === courseId);
+  if (!c) return;
+
+  adminState.editingCourseId = courseId;
+  document.getElementById('adminCourseId').value = courseId;
+  document.getElementById('adminCourseModalBadge').textContent = c.code;
+  document.getElementById('adminCourseModalTitle').textContent = `Edit Course: ${c.code}`;
+
+  document.getElementById('acCode').value = c.code;
+  document.getElementById('acTitle').value = c.title;
+  document.getElementById('acDepartment').value = c.department;
+  document.getElementById('acInstructor').value = c.instructor;
+  document.getElementById('acCredits').value = c.credits;
+  document.getElementById('acDays').value = c.days || 'MWF';
+  document.getElementById('acTimeSlot').value = c.time_slot || '10:00 - 11:15';
+  document.getElementById('acRoom').value = c.room;
+  document.getElementById('acCapacity').value = c.capacity;
+  document.getElementById('acWaitlistCap').value = c.waitlist_capacity;
+  document.getElementById('acPrereqs').value = c.prerequisites || 'None';
+  document.getElementById('acDesc').value = c.description || '';
+  document.getElementById('acIsClosed').checked = !!c.is_closed;
+
+  document.getElementById('adminCourseModalOverlay').classList.add('open');
+}
+
+function closeAdminCourseModal() {
+  document.getElementById('adminCourseModalOverlay').classList.remove('open');
+}
+
+async function saveAdminCourseForm(e) {
+  e.preventDefault();
+  const code = document.getElementById('acCode').value.trim();
+  const title = document.getElementById('acTitle').value.trim();
+  const department = document.getElementById('acDepartment').value;
+  const instructor = document.getElementById('acInstructor').value.trim();
+  const credits = parseInt(document.getElementById('acCredits').value, 10);
+  const days = document.getElementById('acDays').value;
+  const time_slot = document.getElementById('acTimeSlot').value.trim();
+  const room = document.getElementById('acRoom').value.trim();
+  const capacity = parseInt(document.getElementById('acCapacity').value, 10);
+  const waitlist_capacity = parseInt(document.getElementById('acWaitlistCap').value, 10);
+  const prerequisites = document.getElementById('acPrereqs').value.trim();
+  const description = document.getElementById('acDesc').value.trim();
+  const is_closed = document.getElementById('acIsClosed').checked ? 1 : 0;
+
+  if (!code || !title || !instructor || !room) {
+    showToast('Please fill in all required fields.', 'error');
+    return;
+  }
+
+  const payload = {
+    code,
+    title,
+    department,
+    instructor,
+    credits,
+    schedule: `${days} ${time_slot}`,
+    days,
+    time_slot,
+    room,
+    capacity,
+    waitlist_capacity,
+    prerequisites,
+    description,
+    is_closed
+  };
+
+  const saveBtn = document.getElementById('saveAdminCourseBtn');
+  saveBtn.disabled = true;
+  saveBtn.innerHTML = '<span class="spinner"></span> Saving...';
+
+  try {
+    if (adminState.editingCourseId) {
+      await API.adminUpdateCourse(adminState.editingCourseId, payload);
+      showToast(`Course ${code} updated successfully!`, 'success');
+    } else {
+      await API.adminCreateCourse(payload);
+      showToast(`Course ${code} created successfully!`, 'success');
+    }
+    closeAdminCourseModal();
+    await renderAdminDashboardView(document.getElementById('mainContainer'));
+  } catch (err) {
+    showToast(err.message, 'error');
+  } finally {
+    saveBtn.disabled = false;
+    saveBtn.innerHTML = 'Save Course';
+  }
+}
+
+async function toggleCourseStatus(courseId) {
+  try {
+    const res = await API.adminToggleCourseStatus(courseId);
+    showToast(res.message, 'success');
+    await renderAdminDashboardView(document.getElementById('mainContainer'));
+  } catch (err) {
+    showToast(err.message, 'error');
+  }
+}
+
+async function deleteCoursePrompt(courseId, code, title) {
+  if (!confirm(`Are you sure you want to permanently delete course "${code} - ${title}"? All existing student enrollments for this course will be deleted.`)) {
+    return;
+  }
+  try {
+    const res = await API.adminDeleteCourse(courseId);
+    showToast(res.message, 'success');
+    await renderAdminDashboardView(document.getElementById('mainContainer'));
+  } catch (err) {
+    showToast(err.message, 'error');
+  }
+}
+
+async function inspectStudent(studentId) {
+  const modal = document.getElementById('adminStudentModalOverlay');
+  const body = document.getElementById('adminStudentModalBody');
+  const modalId = document.getElementById('adminStudentModalId');
+
+  body.innerHTML = `
+    <div style="text-align:center; padding:2rem;">
+      <span class="spinner" style="border-top-color:var(--primary);"></span>
+      <div class="mt-2 text-sm text-muted">Loading student record...</div>
+    </div>
+  `;
+  modal.classList.add('open');
+
+  try {
+    const data = await API.getAdminStudentEnrollments(studentId);
+    const stu = data.student;
+    const enrollments = data.enrollments || [];
+    const stats = data.stats;
+
+    modalId.textContent = stu.student_id;
+    body.innerHTML = `
+      <div style="background:var(--bg); border-radius:var(--radius-sm); padding:1rem; margin-bottom:1.25rem;">
+        <div class="flex items-center justify-between flex-wrap gap-2">
+          <div>
+            <h3 style="font-size:1.15rem; font-weight:700; margin-bottom:0.25rem;">${escapeHtml(stu.name)}</h3>
+            <div style="font-size:0.85rem; color:var(--text-muted);">${escapeHtml(stu.email)} · ${escapeHtml(stu.program)} (${escapeHtml(stu.department)}) · Semester ${stu.semester}</div>
+          </div>
+          <div class="flex items-center gap-2">
+            <span class="badge badge-enrolled">${stats.enrolled_courses} Enrolled (${stats.total_credits} cr)</span>
+            <span class="badge badge-waitlist">${stats.waitlisted_courses} Waitlisted</span>
+          </div>
+        </div>
+      </div>
+
+      <h4 style="font-size:0.95rem; font-weight:700; margin-bottom:0.75rem;">Registered Subjects & Timetable</h4>
+      ${enrollments.length === 0 ? `
+        <div class="empty-state" style="padding:1.5rem;">
+          <div class="empty-title" style="font-size:1rem;">No course enrollments</div>
+          <div class="empty-desc">This student has not yet enrolled in any courses for Fall 2026.</div>
+        </div>
+      ` : `
+        <table class="table">
+          <thead>
+            <tr>
+              <th>Course</th>
+              <th>Credits</th>
+              <th>Schedule</th>
+              <th>Status</th>
+              <th style="text-align:right;">Admin Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${enrollments.map(e => `
+              <tr>
+                <td>
+                  <span class="course-code">${escapeHtml(e.code)}</span>
+                  <strong>${escapeHtml(e.title)}</strong>
+                </td>
+                <td>${e.credits} cr</td>
+                <td>${escapeHtml(e.schedule)}</td>
+                <td>
+                  ${e.enrollment_status === 'Enrolled' ? '<span class="badge badge-enrolled">Enrolled</span>' : e.enrollment_status === 'Waitlisted' ? `<span class="badge badge-waitlist">Waitlist #${e.waitlist_position}</span>` : '<span class="badge badge-withdrawn">Withdrawn</span>'}
+                </td>
+                <td>
+                  <div class="flex items-center justify-end">
+                    ${e.enrollment_status !== 'Withdrawn' ? `
+                      <button class="btn btn-danger btn-sm" onclick="adminDropEnrollmentAction(${e.enrollment_id}, '${escapeHtml(stu.name)}', '${escapeHtml(e.code)}', true, ${stu.id})">
+                        Drop Course
+                      </button>
+                    ` : `
+                      <span class="text-xs text-muted">Withdrawn</span>
+                    `}
+                  </div>
+                </td>
+              </tr>
+            `).join('')}
+          </tbody>
+        </table>
+      `}
+    `;
+  } catch (err) {
+    body.innerHTML = `<div class="empty-state"><div class="empty-title">Error: ${escapeHtml(err.message)}</div></div>`;
+  }
+}
+
+function closeAdminStudentModal() {
+  document.getElementById('adminStudentModalOverlay').classList.remove('open');
+}
+
+async function adminDropEnrollmentAction(enrollmentId, studentName, courseCode, refreshStudentModal = false, studentId = null) {
+  if (!confirm(`Confirm administrative withdrawal of ${studentName} from ${courseCode}? If enrolled, the next waitlisted student will be promoted immediately.`)) {
+    return;
+  }
+  try {
+    const res = await API.adminDropEnrollment(enrollmentId);
+    showToast(res.message, 'success');
+    await renderAdminDashboardView(document.getElementById('mainContainer'));
+    if (refreshStudentModal && studentId) {
+      inspectStudent(studentId);
+    }
+  } catch (err) {
+    showToast(err.message, 'error');
+  }
+}
+
+// ===================================================================
+// 7. SIGN OUT & USER DROPDOWN
+// ===================================================================
+async function handleSignOut() {
+  await API.logout();
+  appState.user = null;
+  appState.dashboardData = null;
+  updateAuthUI();
+  document.getElementById('userDropdownMenu').classList.remove('open');
+  showToast('You have been signed out.', 'info');
+  setPage('catalogue');
+}
+
+// ===================================================================
+// 8. GLOBAL EVENT LISTENERS & INITIALIZATION
+// ===================================================================
+document.addEventListener('DOMContentLoaded', async () => {
+  // Brand click -> Catalogue
+  document.getElementById('brandHomeBtn').addEventListener('click', () => setPage('catalogue'));
+  document.getElementById('brandHomeBtn').addEventListener('keydown', (e) => {
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      setPage('catalogue');
+    }
+  });
+
+  // Top Nav Buttons
+  document.getElementById('navCatalogueBtn').addEventListener('click', () => setPage('catalogue'));
+  document.getElementById('navDashboardBtn').addEventListener('click', () => setPage('dashboard'));
+  document.getElementById('navScheduleBtn').addEventListener('click', () => setPage('schedule'));
+  const navAdminBtn = document.getElementById('navAdminBtn');
+  if (navAdminBtn) navAdminBtn.addEventListener('click', () => setPage('admin'));
+
+  // Header auth buttons
+  document.getElementById('headerSignInBtn').addEventListener('click', () => setPage('auth', 'login'));
+  document.getElementById('headerRegisterBtn').addEventListener('click', () => setPage('auth', 'register'));
+
+  // User Profile Dropdown
+  const userMenuTrigger = document.getElementById('userMenuTrigger');
+  const userDropdownMenu = document.getElementById('userDropdownMenu');
+
+  userMenuTrigger.addEventListener('click', (e) => {
+    e.stopPropagation();
+    const isOpen = userDropdownMenu.classList.toggle('open');
+    userMenuTrigger.setAttribute('aria-expanded', isOpen);
+  });
+
+  document.addEventListener('click', (e) => {
+    if (!userDropdownMenu.contains(e.target) && !userMenuTrigger.contains(e.target)) {
+      userDropdownMenu.classList.remove('open');
+      userMenuTrigger.setAttribute('aria-expanded', 'false');
+    }
+  });
+
+  document.getElementById('menuDashboardLink').addEventListener('click', () => {
+    userDropdownMenu.classList.remove('open');
+    setPage('dashboard');
+  });
+
+  document.getElementById('menuScheduleLink').addEventListener('click', () => {
+    userDropdownMenu.classList.remove('open');
+    setPage('schedule');
+  });
+
+  const menuAdminLink = document.getElementById('menuAdminLink');
+  if (menuAdminLink) {
+    menuAdminLink.addEventListener('click', () => {
+      userDropdownMenu.classList.remove('open');
+      setPage('admin');
+    });
+  }
+
+  document.getElementById('menuSignOutBtn').addEventListener('click', handleSignOut);
+
+  // Mobile drawer controls
+  const mobileToggle = document.getElementById('mobileToggleBtn');
+  const mobileDrawer = document.getElementById('mobileDrawer');
+  const mobileClose = document.getElementById('mobileDrawerClose');
+
+  mobileToggle.addEventListener('click', () => mobileDrawer.classList.add('open'));
+  mobileClose.addEventListener('click', () => mobileDrawer.classList.remove('open'));
+  mobileDrawer.addEventListener('click', (e) => {
+    if (e.target === mobileDrawer) mobileDrawer.classList.remove('open');
+  });
+
+  document.getElementById('mobileNavCatalogue').addEventListener('click', () => setPage('catalogue'));
+  document.getElementById('mobileNavDashboard').addEventListener('click', () => setPage('dashboard'));
+  document.getElementById('mobileNavSchedule').addEventListener('click', () => setPage('schedule'));
+  const mobileNavAdmin = document.getElementById('mobileNavAdmin');
+  if (mobileNavAdmin) mobileNavAdmin.addEventListener('click', () => setPage('admin'));
+
+  // Detail Modal Close
+  document.getElementById('closeDetailModal').addEventListener('click', closeDetailModal);
+  document.getElementById('closeDetailModalBtn').addEventListener('click', closeDetailModal);
+  document.getElementById('detailModalOverlay').addEventListener('click', (e) => {
+    if (e.target === document.getElementById('detailModalOverlay')) closeDetailModal();
+  });
+
+  // Withdraw Modal Controls
+  document.getElementById('closeWithdrawModal').addEventListener('click', () => {
+    document.getElementById('withdrawModalOverlay').classList.remove('open');
+  });
+  document.getElementById('cancelWithdrawBtn').addEventListener('click', () => {
+    document.getElementById('withdrawModalOverlay').classList.remove('open');
+  });
+  document.getElementById('withdrawModalOverlay').addEventListener('click', (e) => {
+    if (e.target === document.getElementById('withdrawModalOverlay')) {
+      document.getElementById('withdrawModalOverlay').classList.remove('open');
+    }
+  });
+  document.getElementById('confirmWithdrawBtn').addEventListener('click', executeWithdrawal);
+
+  // Admin Course Modal Listeners
+  const closeAdminCourse = document.getElementById('closeAdminCourseModal');
+  if (closeAdminCourse) closeAdminCourse.addEventListener('click', closeAdminCourseModal);
+  const cancelAdminCourse = document.getElementById('cancelAdminCourseBtn');
+  if (cancelAdminCourse) cancelAdminCourse.addEventListener('click', closeAdminCourseModal);
+  const adminCourseOverlay = document.getElementById('adminCourseModalOverlay');
+  if (adminCourseOverlay) {
+    adminCourseOverlay.addEventListener('click', (e) => {
+      if (e.target === adminCourseOverlay) closeAdminCourseModal();
+    });
+  }
+  const adminCourseForm = document.getElementById('adminCourseForm');
+  if (adminCourseForm) adminCourseForm.addEventListener('submit', saveAdminCourseForm);
+
+  // Admin Student Modal Listeners
+  const closeAdminStudent = document.getElementById('closeAdminStudentModal');
+  if (closeAdminStudent) closeAdminStudent.addEventListener('click', closeAdminStudentModal);
+  const closeAdminStudentBtn = document.getElementById('closeAdminStudentModalBtn');
+  if (closeAdminStudentBtn) closeAdminStudentBtn.addEventListener('click', closeAdminStudentModal);
+  const adminStudentOverlay = document.getElementById('adminStudentModalOverlay');
+  if (adminStudentOverlay) {
+    adminStudentOverlay.addEventListener('click', (e) => {
+      if (e.target === adminStudentOverlay) closeAdminStudentModal();
+    });
+  }
+
+  // Keyboard navigation: Escape key closes any open modal or drawer
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') {
+      closeDetailModal();
+      closeAdminCourseModal();
+      closeAdminStudentModal();
+      document.getElementById('withdrawModalOverlay').classList.remove('open');
+      mobileDrawer.classList.remove('open');
+      userDropdownMenu.classList.remove('open');
+    }
+  });
+
+  // Check URL hash for direct links or password reset token
+  const hash = window.location.hash;
+  if (hash.includes('reset-password')) {
+    const params = new URLSearchParams(hash.split('?')[1]);
+    const token = params.get('token');
+    if (token) {
+      appState.resetToken = token;
+      setPage('auth', 'reset');
+    }
+  }
+
+  // Initial Auth Check
+  try {
+    const user = await API.getMe();
+    appState.user = user;
+    updateAuthUI();
+
+    if (user && !user.is_admin) {
+      // Preload dashboard stats to badge counts for students
+      API.getDashboard().then(dash => {
+        appState.dashboardData = dash;
+        const enrolledCount = dash.stats.enrolled_courses;
+        const b = document.getElementById('navEnrolledCount');
+        if (b) {
+          b.textContent = enrolledCount;
+          b.classList.toggle('hidden', enrolledCount === 0);
+        }
+        const mb = document.getElementById('mobileNavBadge');
+        if (mb) mb.textContent = enrolledCount;
+      }).catch(() => {});
+    }
+  } catch {
+    appState.user = null;
+    updateAuthUI();
+  }
+
+  // Render initial view
+  renderCurrentView();
+});
+</script>
+</body>
+</html>
